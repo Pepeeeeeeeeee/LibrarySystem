@@ -18,7 +18,6 @@ public class Book {
     private final boolean isAvailable;
     private final String coverImageUrl;
     private final String location;
-
     private List<BookCheckout> checkouts = new ArrayList<>();
 
     public Book(int id, String isbn, String title, String author, LocalDate publicationDate,
@@ -36,7 +35,7 @@ public class Book {
         this.coverImageUrl = coverImageUrl;
         this.location = location;
     }
-
+    
     public int getId() {
         return id;
     }

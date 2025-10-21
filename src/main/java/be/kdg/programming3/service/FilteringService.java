@@ -3,12 +3,86 @@ package be.kdg.programming3.service;
 import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
 public class FilteringService {
+    private final Map<Class<?>, Map<String, Field>> domainFieldCache = new ConcurrentHashMap<>();
+    private Class<?> activeDomain;
+
+    public List<String> preloadDomainFields(Class<?> domainClass) {
+        if (!domainClass.equals(activeDomain)) {
+            domainFieldCache.clear();
+
+            Map<String, Field> fieldMap = Arrays.stream(domainClass.getDeclaredFields())
+                    .peek(f -> f.setAccessible(true))
+                    .collect(Collectors.toMap(Field::getName, f -> f));
+
+            domainFieldCache.put(domainClass, fieldMap);
+            activeDomain = domainClass;
+        }
+        return domainFieldCache.get(domainClass).keySet().stream().toList();
+
+
+    }
+
+    public void clearCache() {
+        domainFieldCache.clear();
+        activeDomain = null;
+    }
+
+    /**
+     * @deprecated Use {@link #buildMultiFieldPredicate(Class, List, String)} instead.
+     */
+    @Deprecated
+    public <T> Predicate<T> buildContainsPredicate(Class<T> domainClass, String fieldName, String value) {
+        preloadDomainFields(domainClass);
+        Field field = domainFieldCache.get(domainClass).get(fieldName);
+        if (field == null) {
+            throw new IllegalArgumentException("Unknown field: " + fieldName);
+        }
+
+        return entity -> {
+            try {
+                Object fieldValue = field.get(entity);
+                if (fieldValue == null) return false;
+                return fieldValue.toString().toLowerCase().contains(value.toLowerCase());
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    public <T> Predicate<T> buildMultiFieldPredicate(Class<T> domainClass, List<String> fieldNames, String value) {
+        preloadDomainFields(domainClass);
+        return entity -> {
+            for (String fieldName : fieldNames) {
+                Field field = domainFieldCache.get(domainClass).get(fieldName);
+                if (field == null) continue;
+                try {
+                    Object fieldValue = field.get(entity);
+                    if (fieldValue != null && fieldValue.toString().toLowerCase().contains(value.toLowerCase())) {
+                        return true; // match found
+                    }
+                } catch (IllegalAccessException ignored) {}
+            }
+            return false;
+        };
+    }
+
+    public <T> List<T> filter(List<T> items, Predicate<T> predicate) {
+        return items.stream().filter(predicate).toList();
+    }
+
+    /**
+     * @deprecated Use {@link #buildMultiFieldPredicate(Class, List, String)} instead.
+     */
+    @Deprecated
     public <T> Predicate<T> buildPredicate(Class<T> clazz, String fieldName, String operator, String rawValue) {
         return item -> {
             try {
@@ -33,7 +107,7 @@ public class FilteringService {
 
                 // Access field value (java reflection)
                 field.setAccessible(true);
-                Object fieldValue = field.get(item);
+                Object fieldValue = field.get(2);
                 if (fieldValue == null) return false;
 
                 // Strings have special operators
@@ -83,12 +157,6 @@ public class FilteringService {
                 return false;
             }
         };
-    }
-
-    public <T> List<T> filter(List<T> entities, Predicate<T> predicate) {
-        return entities.stream()
-                .filter(predicate)
-                .collect(Collectors.toList());
     }
 
     private Object convertValue(Class<?> type, String rawValue) {

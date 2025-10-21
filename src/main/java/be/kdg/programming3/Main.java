@@ -6,19 +6,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Main implements CommandLineRunner {
-    private final LibraryPresenter presenter;
-
-    public Main(LibraryPresenter presenter) {
-        this.presenter = presenter;
-    }
+public class Main /*implements CommandLineRunner*/{
+//    private final LibraryPresenter presenter;
+//
+//    public Main(LibraryPresenter presenter) {
+//        this.presenter = presenter;
+//    }
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
-
-    @Override
-    public void run(String... args) {
-        presenter.start();
-    }
+//
+//    @Override
+//    public void run(String... args) {
+//        presenter.start();
+//    }
 }

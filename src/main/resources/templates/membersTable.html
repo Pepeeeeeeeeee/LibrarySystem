@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{members.title}">All Members</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="container mt-4">
+    <h2 th:text="#{members.table.heading}">All Members Attributes</h2>
+    <div class="border border-light-subtle rounded-3 bg-white p-4 shadow-sm">
+        <div th:replace="~{fragments/filter-bar :: filterBar(
+            ${memberFields}, ${selectedFields}, ${query}, @{/members/filter}, true, @{/members/add}
+        )}"></div>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered table-sm">
+                <thead>
+                <tr>
+                    <th th:text="#{members.field.id}"></th>
+                    <th th:text="#{members.field.firstName}"></th>
+                    <th th:text="#{members.field.lastName}"></th>
+                    <th th:text="#{members.field.membershipDate}"></th>
+                    <th th:text="#{members.field.membershipType}"></th>
+                    <th th:text="#{members.field.email}"></th>
+                    <th th:text="#{members.field.phoneNumber}"></th>
+                    <th th:text="#{members.field.activeMembership}"></th>
+                    <th th:text="#{members.field.profileImageUrl}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="member : ${members}">
+                    <td th:text="${member.id}"></td>
+                    <td th:text="${member.firstName}"></td>
+                    <td th:text="${member.lastName}"></td>
+                    <td th:text="${member.membershipDate}"></td>
+                    <td th:text="${member.membershipType}"></td>
+                    <td th:text="${member.email}"></td>
+                    <td th:text="${member.phoneNumber}"></td>
+                    <td th:text="${member.activeMembership}"></td>
+                    <td th:text="${member.profileImageUrl}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

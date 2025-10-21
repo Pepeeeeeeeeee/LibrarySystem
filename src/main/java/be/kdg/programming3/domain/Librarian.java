@@ -9,6 +9,8 @@ public class Librarian {
     private final String firstName;
     private final String lastName;
     private final LocalDate hireDate;
+    private final String email;
+    private final int phoneNumber;
     private final double salary;
     private final Department department;
     private final boolean fullTime;
@@ -16,7 +18,7 @@ public class Librarian {
 
     public Librarian(int id, String firstName, String lastName, LocalDate hireDate,
                      double salary, Department department, boolean fullTime,
-                     String employeePhotoUrl) {
+                     String employeePhotoUrl, String email, int phoneNumber) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -25,9 +27,18 @@ public class Librarian {
         this.department = department;
         this.fullTime = fullTime;
         this.employeePhotoUrl = employeePhotoUrl;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 
-    // Getters
+    public String getEmail() {
+        return email;
+    }
+
+    public int getPhoneNumber() {
+        return phoneNumber;
+    }
+
     public int getId() { return id; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }

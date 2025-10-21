@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{checkouts.title}">All Checkouts</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="container mt-4">
+    <h2 th:text="#{checkouts.table.heading}">All Checkouts Attributes</h2>
+    <div class="border border-light-subtle rounded-3 bg-white p-4 shadow-sm">
+        <div th:replace="~{fragments/filter-bar :: filterBar(
+            ${checkoutFields}, ${selectedFields}, ${query}, @{/checkouts/filter}, true, null
+        )}"></div>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered table-sm">
+                <thead>
+                <tr>
+                    <th th:text="#{checkouts.field.id}"></th>
+                    <th th:text="#{checkouts.field.bookTitle}"></th>
+                    <th th:text="#{checkouts.field.memberEmail}"></th>
+                    <th th:text="#{checkouts.field.checkoutDate}"></th>
+                    <th th:text="#{checkouts.field.dueDate}"></th>
+                    <th th:text="#{checkouts.field.returnDate}"></th>
+                    <th th:text="#{checkouts.field.renewed}"></th>
+                    <th th:text="#{checkouts.field.status}"></th>
+                    <th th:text="#{checkouts.field.handledBy}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="checkout : ${checkouts}">
+                    <td th:text="${checkout.id}"></td>
+                    <td th:text="${checkout.book.title}"></td>
+                    <td th:text="${checkout.member.email}"></td>
+                    <td th:text="${checkout.checkoutDate}"></td>
+                    <td th:text="${checkout.dueDate}"></td>
+                    <td th:text="${checkout.returnDate}"></td>
+                    <td th:text="${checkout.renewed}"></td>
+                    <td th:text="${checkout.status}"></td>
+                    <td th:text="${checkout.handledByLibrarian != null ? checkout.handledByLibrarian.email : 'N/A'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

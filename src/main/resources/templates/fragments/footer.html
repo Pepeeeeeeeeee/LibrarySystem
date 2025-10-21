@@ -1,0 +1,7 @@
+<div th:fragment="footer">
+    <footer class="footer bg-dark mt-5 text-center py-3 fixed-bottom">
+        <div class="container">
+            <span class="text-light">&copy; Pepe - <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span></span>
+        </div>
+    </footer>
+</div>
