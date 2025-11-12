@@ -4,7 +4,9 @@ import be.kdg.programming3.dto.LibrarianDTO;
 import be.kdg.programming3.mapper.LibrarianMapper;
 import be.kdg.programming3.domain.Librarian;
 import be.kdg.programming3.service.LibrarianService;
-import be.kdg.programming3.service.EntityFactoryService;
+import be.kdg.programming3.viewModel.LibrarianViewModel;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 import be.kdg.programming3.service.FilteringService;
 import be.kdg.programming3.service.MemberService;
 import org.springframework.stereotype.Controller;
@@ -79,15 +81,25 @@ public class LibrarianController {
         return "librarians";
     }
 
+
     @GetMapping("/add")
     public String showAddLibrarianForm(Model model) {
-        model.addAttribute("librarian", new LibrarianDTO());
+        model.addAttribute("librarian", new LibrarianViewModel());
         return "addLibrarian";
     }
 
     @PostMapping("/add")
-    public String addLibrarian(@ModelAttribute("librarian") LibrarianDTO librarianDTO) {
-        librarianService.addLibrarian(LibrarianMapper.toEntity(librarianDTO));
+    public String addLibrarian(
+            @Valid @ModelAttribute("librarian") LibrarianViewModel librarianViewModel,
+            BindingResult bindingResult,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            return "addLibrarian";
+        }
+
+        librarianService.addLibrarian(LibrarianMapper.vmToEntity(librarianViewModel));
+
         return "redirect:/librarians";
     }
 }

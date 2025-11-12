@@ -10,12 +10,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import be.kdg.programming3.domain.Book;
 import be.kdg.programming3.domain.enums.*;
 import be.kdg.programming3.service.BookService;
 import be.kdg.programming3.service.FilteringService;
+import be.kdg.programming3.viewModel.BookViewModel;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 @Controller
 @RequestMapping("/books")
@@ -82,36 +86,52 @@ public class BookController {
 
     @GetMapping("/add")
     public String showAddBookForm(Model model) {
-        model.addAttribute("book", new BookDTO());
+        model.addAttribute("book", new BookViewModel());
         return "addBook";
     }
 
     @PostMapping("/add")
-    public String addBook(@ModelAttribute("book") BookDTO bookDTO) {
-        bookService.addBook(BookMapper.toEntity(bookDTO));
+    public String addBook(@Valid @ModelAttribute("book") BookViewModel bookViewModel, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return "addBook";
+        }
+
+        bookService.addBook(BookMapper.vmToEntity(bookViewModel));
+
         return "redirect:/books";
     }
 
     @GetMapping("/{id}")
     public String showBookDetail(@PathVariable Long id, Model model) {
-        Optional<BookDTO> bookOpt = bookService.getAllBooks().stream().filter(b -> b.getId() == id).map(BookMapper::toDTO).findFirst();
+        Optional<BookDTO> bookOpt = bookService.getAllBooks().stream()
+                .filter(b -> b.getId() == id)
+                .map(BookMapper::toDTO)
+                .findFirst();
+
         if (bookOpt.isEmpty()) {
             return "redirect:/books?error=notfound";
         }
 
         BookDTO book = bookOpt.get();
-        boolean isCheckedOut = book.isAvailable();
-        LocalDate expectedReturnDate = null;
+        Map.Entry<LocalDate, Boolean> checkoutDetail = bookService.getCheckoutDetails(id);
 
-        if (isCheckedOut) {
-            expectedReturnDate = bookService.getAllBooks().stream().filter(b -> b.getId() == id).findAny().get().getCheckouts().getLast().getReturnDate();
-            log.warn("return? " +  expectedReturnDate);
+        LocalDate expectedReturnDate = null;
+        boolean isCheckedOut = false;
+
+        if (checkoutDetail != null) {
+            Boolean checkoutStatus = checkoutDetail.getValue();
+            expectedReturnDate = checkoutDetail.getKey();
+
+            isCheckedOut = (checkoutStatus == null || checkoutStatus);
+            log.debug("Book [{}] checkout info - status: {}, return date: {}", id, checkoutStatus, expectedReturnDate);
         }
 
         model.addAttribute("book", book);
         model.addAttribute("isCheckedOut", isCheckedOut);
-        model.addAttribute("expectedReturnDate", expectedReturnDate);
+        model.addAttribute("expectedReturnDate", expectedReturnDate != null ? expectedReturnDate.toString() : "None");
 
         return "bookDetail";
     }
+
 }

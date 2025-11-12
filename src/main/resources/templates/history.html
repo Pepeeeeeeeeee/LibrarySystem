@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Session History</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+</head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Session History</h2>
+
+    <div class="card shadow-sm p-4">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Page URL</th>
+                <th>Visited At</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="entry, iterStat : ${historyEntries}">
+                <td th:text="${iterStat.index + 1}"></td>
+                <td th:text="${entry.url}"></td>
+                <td th:text="${#temporals.format(entry.timestamp, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            </tr>
+            <tr th:if="${historyEntries.isEmpty()}">
+                <td colspan="3" class="text-center">No pages visited yet in this session.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

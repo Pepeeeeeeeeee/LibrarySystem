@@ -2,6 +2,7 @@ package be.kdg.programming3.mapper;
 
 import be.kdg.programming3.domain.Book;
 import be.kdg.programming3.dto.BookDTO;
+import be.kdg.programming3.viewModel.BookViewModel;
 
 public class BookMapper {
     public static BookDTO toDTO(Book book) {
@@ -33,6 +34,22 @@ public class BookMapper {
                 dto.isAvailable(),
                 dto.getCoverImageUrl(),
                 dto.getLocation()
+        );
+    }
+
+    public static Book vmToEntity(BookViewModel bvm) {
+        return new Book(
+                bvm.getId(),
+                bvm.getIsbn(),
+                bvm.getTitle(),
+                bvm.getAuthor(),
+                bvm.getPublicationDate(),
+                bvm.getPages(),
+                bvm.getPrice(),
+                bvm.getGenre(),
+                bvm.isAvailable(),
+                bvm.getCoverImageUrl(),
+                bvm.getLocation()
         );
     }
 }

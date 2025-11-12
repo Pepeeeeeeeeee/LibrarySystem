@@ -2,6 +2,7 @@ package be.kdg.programming3.mapper;
 
 import be.kdg.programming3.domain.Librarian;
 import be.kdg.programming3.dto.LibrarianDTO;
+import be.kdg.programming3.viewModel.LibrarianViewModel;
 
 public class LibrarianMapper {
     public static LibrarianDTO toDTO(Librarian librarian) {
@@ -33,4 +34,20 @@ public class LibrarianMapper {
                 dto.getPhoneNumber()
         );
     }
+
+    public static Librarian vmToEntity(LibrarianViewModel vm) {
+        return new Librarian(
+                vm.getId(),
+                vm.getFirstName(),
+                vm.getLastName(),
+                vm.getHireDate(),
+                vm.getSalary(),
+                vm.getDepartment(),
+                vm.isFullTime(),
+                vm.getEmployeePhotoUrl(),
+                vm.getEmail(),
+                vm.getPhoneNumber() != null ? Integer.parseInt(vm.getPhoneNumber()) : 0
+        );
+    }
+
 }

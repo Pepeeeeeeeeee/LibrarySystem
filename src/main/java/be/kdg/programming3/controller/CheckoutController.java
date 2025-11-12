@@ -55,7 +55,7 @@ public class CheckoutController {
     @GetMapping("/add")
     public String showAddCheckoutForm(Model model) {
         model.addAttribute("checkout", new CheckoutDTO());
-        return "add-checkout";
+        return "addCheckout";
     }
 
     @PostMapping("/add")

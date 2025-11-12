@@ -83,7 +83,7 @@ public class MemberController {
     @GetMapping("/add")
     public String showAddMemberForm(Model model) {
         model.addAttribute("member", new MemberDTO());
-        return "add-member";
+        return "addMember";
     }
 
     @PostMapping("/add")

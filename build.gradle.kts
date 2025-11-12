@@ -31,7 +31,10 @@ dependencies {
         implementation ("org.springframework.boot:spring-boot-starter-thymeleaf")
         implementation("org.webjars:bootstrap:5.3.3")
         implementation("org.webjars:jquery:3.7.1")
+        implementation("org.springframework.boot:spring-boot-starter-validation")
+        implementation ("org.springframework.boot:spring-boot-starter-jdbc")
 
+        runtimeOnly ("com.h2database:h2")
 
         compileOnly("org.projectlombok:lombok")
         annotationProcessor("org.projectlombok:lombok")
