@@ -8,7 +8,7 @@
 </head>
 <body class="bg-light">
 
-<div th:replace="~{fragments/header :: navbar}"></div>
+<div th:replace="~{fragments/header :: navbar(null, null)}"></div>
 
 <div class="container py-5">
     <div class="d-flex justify-content-center align-items-center">
@@ -21,18 +21,13 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input name="email" type="email" class="form-control" id="email" required>
-                </div>
-
-                <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input name="password" type="password" class="form-control" id="password" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="confirmPassword" class="form-label">Confirm Password</label>
-                    <input name="confirmPassword" type="password" class="form-control" id="confirmPassword" required>
+                    <label for="passwordConf" class="form-label">Confirm Password</label>
+                    <input name="passwordConf" type="password" class="form-control" id="passwordConf" required>
                 </div>
 
                 <div class="d-grid mt-4">

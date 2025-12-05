@@ -1,9 +1,11 @@
 package be.kdg.programming3.domain;
 
 import be.kdg.programming3.domain.enums.CheckoutStatus;
+import lombok.Data;
 import java.time.LocalDate;
 import static java.lang.String.format;
 
+@Data
 public class BookCheckout {
     private final int id;
     private final Book book;
@@ -29,23 +31,7 @@ public class BookCheckout {
         this.status = status;
         this.handledByLibrarian = handledByLibrarian;
 
-        // Link this checkout to book and member
         book.addCheckout(this);
-    }
-
-    // Getters
-    public int getId() { return id; }
-    public Book getBook() { return book; }
-    public Member getMember() { return member; }
-    public LocalDate getCheckoutDate() { return checkoutDate; }
-    public LocalDate getDueDate() { return dueDate; }
-    public LocalDate getReturnDate() { return returnDate; }
-    public boolean isRenewed() { return renewed; }
-    public CheckoutStatus getStatus() { return status; }
-    public Librarian getHandledByLibrarian() { return handledByLibrarian; }
-
-    public void setReturnDate(LocalDate returnDate) {
-        this.returnDate = returnDate;
     }
 
     @Override

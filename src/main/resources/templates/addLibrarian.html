@@ -7,7 +7,7 @@
 </head>
 <body class="bg-light text-dark">
 
-<div th:replace="~{fragments/header :: navbar}"></div>
+<div th:replace="~{fragments/header :: navbar(${currentUser}, ${userPhotoUrl})}"></div>
 
 <div class="d-flex justify-content-center align-items-center py-5">
     <div class="card bg-light text-dark shadow" style="max-width: 600px; width: 100%;">

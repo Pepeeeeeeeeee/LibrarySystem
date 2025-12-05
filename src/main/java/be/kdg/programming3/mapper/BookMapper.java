@@ -52,4 +52,20 @@ public class BookMapper {
                 bvm.getLocation()
         );
     }
+
+    public static BookViewModel entityToVm(Book book) {
+        return new BookViewModel(
+                book.getId(),
+                book.getIsbn(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getPublicationDate(),
+                book.getPages(),
+                book.getPrice(),
+                book.getGenre(),
+                book.isAvailable(),
+                book.getCoverImageUrl(),
+                book.getLocation()
+        );
+    }
 }

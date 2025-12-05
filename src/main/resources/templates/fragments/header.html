@@ -1,4 +1,4 @@
-<div th:fragment="navbar">
+<div th:fragment="navbar(currentUser, userPhotoUrl)">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid d-flex justify-content-between align-items-center">
 
@@ -23,12 +23,12 @@
             </div>
 
             <div class="d-flex ms-auto align-items-center">
-                <div th:if="not ${userLoggedIn ?: false}">
+                <div th:if="not ${currentUser ?: null}">
                     <a class="btn btn-outline-light me-2" th:href="@{/register}" th:text="#{nav.register}"></a>
                     <a class="btn btn-outline-light" th:href="@{/login}" th:text="#{nav.login}"></a>
                 </div>
 
-                <div th:if="${userLoggedIn}" class="dropdown">
+                <div th:if="${currentUser != null}" class="dropdown z-3">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
                         <img th:src="${userPhotoUrl}" alt="Profile" class="rounded-circle border border-light"

@@ -2,7 +2,6 @@ package be.kdg.programming3.session;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

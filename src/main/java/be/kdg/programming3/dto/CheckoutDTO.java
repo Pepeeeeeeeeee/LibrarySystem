@@ -4,7 +4,6 @@ import be.kdg.programming3.domain.Book;
 import be.kdg.programming3.domain.Librarian;
 import be.kdg.programming3.domain.Member;
 import be.kdg.programming3.domain.enums.CheckoutStatus;
-
 import java.time.LocalDate;
 
 public class CheckoutDTO {

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/header :: navbar(${currentUser}, ${userPhotoUrl})}"></div>
+
+<div class="container mt-4 pb-5">
+    <h2>My Profile</h2>
+
+        <div class="col-md-4 text-center">
+            <img th:src="${profile.profileImageUrl}"
+                 class="img-fluid rounded mb-3 shadow"
+                 style="max-width: 220px;"
+                 alt="Profile Image">
+
+            <form th:action="@{/profile/update-image}" method="post" enctype="multipart/form-data">
+                <input type="file" class="form-control mb-2" name="imageFile" accept="image/*">
+                <button type="submit" class="btn btn-primary w-100">Update Image</button>
+            </form>
+        </div>
+
+        <div class="col-md-8">
+            <form th:action="@{/profile/update}" method="post" th:object="${profile}">
+                <div class="row mb-3">
+                    <div class="col">
+                        <label>First Name</label>
+                        <input class="form-control" th:field="*{firstName}">
+                    </div>
+                    <div class="col">
+                        <label>Last Name</label>
+                        <input class="form-control" th:field="*{lastName}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input class="form-control" th:field="*{email}">
+                </div>
+
+                <div class="mb-3">
+                    <label>Phone Number</label>
+                    <input class="form-control" th:field="*{phoneNumber}">
+                </div>
+
+                <div class="mb-3">
+                    <label>Username</label>
+                    <input class="form-control" th:field="*{username}">
+                </div>
+
+                <button class="btn btn-success">Save Changes</button>
+            </form>
+
+            <hr class="my-4">
+
+            <h4>Change Password</h4>
+            <form th:action="@{/profile/change-password}" method="post">
+                <div class="mb-3">
+                    <label>Current Password</label>
+                    <input type="password" class="form-control" name="currentPassword" required>
+                </div>
+
+                <div class="mb-3">
+                    <label>New Password</label>
+                    <input type="password" class="form-control" name="newPassword" required>
+                </div>
+
+                <button class="btn btn-warning">Change Password</button>
+            </form>
+        </div>
+
+    <hr class="my-5">
+
+    <h3>My Checked Out Books</h3>
+    <div th:replace="~{fragments/checkoutList :: checkoutList('My Chekouts',${myCheckouts})}"></div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

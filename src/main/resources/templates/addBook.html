@@ -7,7 +7,7 @@
 </head>
 <body class="bg-light">
 
-<div th:replace="~{fragments/header :: navbar}"></div>
+<div th:replace="~{fragments/header :: navbar(${currentUser}, ${userPhotoUrl})}"></div>
 
 <div class="container mt-5 mb-5">
     <h2 class="mb-4 text-center" th:text="#{books.add.title}"></h2>

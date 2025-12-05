@@ -7,10 +7,10 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
 </head>
 <body class="overflow-hidden">
-<div th:replace="~{fragments/header :: navbar}"></div>
+<div th:replace="~{fragments/header :: navbar(${userLoggedIn}, ${userPhotoUrl})}"></div>
 
 <section class="vh-100 d-flex align-items-center justify-content-center text-center bg-dark text-white"
-         style="background: url('/images/bookshelf.jpg') center/cover no-repeat;">
+         style="background: url('/images/bookshelf.jpg') center/cover no-repeat;z-index: 0;">
     <div class="bg-dark bg-opacity-50 p-5 rounded">
         <h1 class="display-4 fw-bold mb-3" th:text="#{home.heading}"></h1>
         <p class="lead mb-4" th:text="#{home.content}"></p>
@@ -20,6 +20,6 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

@@ -27,8 +27,6 @@ public class FilteringService {
             activeDomain = domainClass;
         }
         return domainFieldCache.get(domainClass).keySet().stream().toList();
-
-
     }
 
     public void clearCache() {

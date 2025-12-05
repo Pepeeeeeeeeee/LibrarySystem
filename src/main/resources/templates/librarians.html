@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
-<div th:replace="~{fragments/header :: navbar}"></div>
+<div th:replace="~{fragments/header :: navbar(${currentUser}, ${userPhotoUrl})}"></div>
 
 <div class="container mt-4">
     <h2 th:text="#{librarians.title}" class="mb-4"></h2>
@@ -17,20 +17,22 @@
             ${selectedFields},
             ${query},
             @{/librarians/filter},
-            ${currentUser != null and currentUser.membershipType.name() == 'ADMIN'},
+            ${currentUser != null and currentUser.flags.name() == 'ADMIN'},
             @{/librarians/add}
         )}"></div>
 
         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4 mt-3">
             <div class="col" th:each="librarian : ${librarians}">
-                <div class="card h-100 border-light shadow-sm">
-                    <img th:src="${librarian.employeePhotoUrl}" class="card-img-top" alt="" th:alt="${librarian.firstName + ' ' + librarian.lastName}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title" th:text="${librarian.firstName + ' ' + librarian.lastName}"></h5>
-                        <p class="card-text" th:text="${librarian.email}"></p>
-                        <p class="text-muted mb-0" th:text="${librarian.phoneNumber}"></p>
+                <a th:href="@{'/librarians/' + ${librarian.id}}" class="text-decoration-none text-dark">
+                    <div class="card h-100 border-light shadow-sm">
+                        <img th:src="${librarian.employeePhotoUrl}" class="card-img-top" alt="" th:alt="${librarian.firstName + ' ' + librarian.lastName}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title" th:text="${librarian.firstName + ' ' + librarian.lastName}"></h5>
+                            <p class="card-text" th:text="${librarian.email}"></p>
+                            <p class="text-muted mb-0" th:text="${librarian.phoneNumber}"></p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
 

@@ -1,34 +1,34 @@
 package be.kdg.programming3.controller;
 
+import be.kdg.programming3.domain.User;
+import be.kdg.programming3.service.AuthService;
+import be.kdg.programming3.service.MemberService;
+import be.kdg.programming3.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
+    private final AuthService authService;
+    private final UserService userService;
+    private final MemberService memberService;
 
-    @GetMapping("/")
-    public String home(Model model) {
-        // Simulate a logged-in user
-        model.addAttribute("userLoggedIn", false); // change to true to test logged-in state
-        model.addAttribute("userPhotoUrl", "/images/default-profile.png");
-        return "home"; // your home.html page
+    public HomeController(AuthService authService, UserService userService, MemberService memberService) {
+        this.authService = authService;
+        this.userService = userService;
+        this.memberService = memberService;
     }
 
-//    @GetMapping("/books")
-//    public String books(Model model) {
-//        // Add the simulated user info for pages with the navbar
-//        model.addAttribute("userLoggedIn", false);
-//        model.addAttribute("userPhotoUrl", "/images/default-profile.png");
-//        return "books";
-//    }
-//
-//    @GetMapping("/members")
-//    public String members(Model model) {
-//        model.addAttribute("userLoggedIn", false);
-//        model.addAttribute("userPhotoUrl", "/images/default-profile.png");
-//        return "members";
-//    }
-//
-//    // Repeat for other pages where navbar is used
+    @GetMapping("/")
+    public String home(Model model, HttpServletRequest request, HttpServletResponse response) {
+        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
+
+        model.addAttribute("userLoggedIn", authService.checkIsAuth(request) ? user : null);
+        model.addAttribute("userPhotoUrl", authService.checkIsAuth(request) ? memberService.findById(user.getId()).getProfileImageUrl() : null);
+        return "home";
+    }
+
 }

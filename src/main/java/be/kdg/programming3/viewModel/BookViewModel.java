@@ -2,12 +2,15 @@ package be.kdg.programming3.viewModel;
 
 import be.kdg.programming3.domain.enums.Genre;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class BookViewModel {
     private int id;
 

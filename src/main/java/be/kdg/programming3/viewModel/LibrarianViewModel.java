@@ -2,11 +2,15 @@ package be.kdg.programming3.viewModel;
 
 import be.kdg.programming3.domain.enums.Department;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LibrarianViewModel {
     private int id;
 
@@ -37,5 +41,5 @@ public class LibrarianViewModel {
     private String email;
 
     @Pattern(regexp = "^\\+?[0-9]{8,15}$", message = "{validation.librarian.phoneNumber.pattern}")
-    private String phoneNumber;
+    private int phoneNumber;
 }

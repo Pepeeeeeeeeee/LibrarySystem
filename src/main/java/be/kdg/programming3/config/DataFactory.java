@@ -122,7 +122,7 @@ public class DataFactory {
         checkouts.add(new BookCheckout(5, books.get(4), members.get(4), LocalDate.of(2023, 5, 12),
                 LocalDate.of(2023, 5, 26), null, false, CheckoutStatus.CHECKED_OUT, librarians.get(4)));
 
-        users.add(new User(1, "admin", "admin@admin.com", "admin", Flags.ADMIN));
+        users.add(new User(1, 0, "admin", "admin", Flags.ADMIN, ""));
 
         // Link checkouts to books and members
         checkouts.forEach(checkout -> {

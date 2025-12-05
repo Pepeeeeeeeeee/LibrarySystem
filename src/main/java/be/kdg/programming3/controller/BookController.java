@@ -1,8 +1,12 @@
 package be.kdg.programming3.controller;
 
+import be.kdg.programming3.domain.BookCheckout;
+import be.kdg.programming3.domain.User;
 import be.kdg.programming3.dto.BookDTO;
 import be.kdg.programming3.mapper.BookMapper;
-import be.kdg.programming3.service.MemberService;
+import be.kdg.programming3.service.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.ui.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +19,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import be.kdg.programming3.domain.Book;
 import be.kdg.programming3.domain.enums.*;
-import be.kdg.programming3.service.BookService;
-import be.kdg.programming3.service.FilteringService;
 import be.kdg.programming3.viewModel.BookViewModel;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
@@ -27,18 +29,20 @@ public class BookController {
     private final BookService bookService;
     private final FilteringService filteringService;
     private static final Logger log = LoggerFactory.getLogger(BookController.class);
+    private final UserService userService;
+    private final AuthService authService;
+    private final MemberService memberService;
 
-    //Test user
-    private MemberService memberService;
-
-    public BookController(BookService bookService, FilteringService filteringService, MemberService memberService) {
+    public BookController(BookService bookService, FilteringService filteringService, UserService userService, AuthService authService, MemberService memberService) {
         this.bookService = bookService;
         this.filteringService = filteringService;
+        this.userService = userService;
+        this.authService = authService;
         this.memberService = memberService;
     }
 
     @GetMapping
-    public String listBooks(@RequestParam(defaultValue = "1") int page, Model model, @RequestParam(required = false) List<String> fields, @RequestParam(required = false) String query) {
+    public String listBooks(@RequestParam(defaultValue = "1") int page, Model model, @RequestParam(required = false) List<String> fields, @RequestParam(required = false) String query, HttpServletRequest request, HttpServletResponse response) {
         int pageSize = 12;
         List<Book> allBooks = bookService.getAllBooks();
         int totalBooks = allBooks.size();
@@ -49,12 +53,14 @@ public class BookController {
 
         List<Book> pageBooks = allBooks.subList(fromIndex, toIndex);
 
+        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
+
         model.addAttribute("books", pageBooks.stream().map(BookMapper::toDTO).toList());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalBooks", totalBooks);
-        model.addAttribute("currentUser", memberService.getAllMembers().getFirst());
-        model.addAttribute("userPhotoUrl", "/images/default-profile.png");
+        model.addAttribute("currentUser", user);
+        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
         model.addAttribute("bookFields", filteringService.preloadDomainFields(Book.class));
         model.addAttribute("query", query);
         model.addAttribute("selectedFields", fields);
@@ -64,29 +70,34 @@ public class BookController {
     }
 
     @GetMapping("/filter")
-    public String filterBooks(@RequestParam(defaultValue = "title") List<String> fields, @RequestParam String query, Model model) {
+    public String filterBooks(@RequestParam(defaultValue = "title") List<String> fields, @RequestParam String query, Model model, HttpServletRequest request, HttpServletResponse response) {
         log.debug("Filtering books by field={} query={}", fields, query);
         if(query.isBlank()) return "redirect:/books";
         Predicate<Book> predicate = filteringService.buildMultiFieldPredicate(Book.class, fields, query);
         List<Book> filtered = filteringService.filter(bookService.getAllBooks(), predicate);
+
+        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
 
         model.addAttribute("books", filtered.stream().map(BookMapper::toDTO).toList());
         model.addAttribute("bookFields", filteringService.preloadDomainFields(Book.class));
         model.addAttribute("totalBooks", filtered.size());
         model.addAttribute("currentPage", 1);
         model.addAttribute("totalPages", 1);
-        model.addAttribute("currentUser", memberService.getAllMembers().getFirst());
-        model.addAttribute("userPhotoUrl", "/images/default-profile.png");
+        model.addAttribute("currentUser", user);
+        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
         model.addAttribute("selectedFields", fields);
         model.addAttribute("query", query);
-
 
         return "books";
     }
 
     @GetMapping("/add")
-    public String showAddBookForm(Model model) {
+    public String showAddBookForm(Model model, HttpServletRequest request, HttpServletResponse response) {
+        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
+
         model.addAttribute("book", new BookViewModel());
+        model.addAttribute("currentUser", user);
+        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
         return "addBook";
     }
 
@@ -103,35 +114,102 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public String showBookDetail(@PathVariable Long id, Model model) {
-        Optional<BookDTO> bookOpt = bookService.getAllBooks().stream()
-                .filter(b -> b.getId() == id)
-                .map(BookMapper::toDTO)
-                .findFirst();
+    public String showBookDetail(@PathVariable int id, Model model, HttpServletRequest request, HttpServletResponse response) {
+        Book book = bookService.findById(id);
 
-        if (bookOpt.isEmpty()) {
+        if (book == null) {
             return "redirect:/books?error=notfound";
         }
 
-        BookDTO book = bookOpt.get();
-        Map.Entry<LocalDate, Boolean> checkoutDetail = bookService.getCheckoutDetails(id);
+        BookDTO bookDTO = BookMapper.toDTO(book);
+        Optional<BookCheckout> checkoutDetail = bookService.getCheckoutDetailsObj(id);
 
         LocalDate expectedReturnDate = null;
         boolean isCheckedOut = false;
 
-        if (checkoutDetail != null) {
-            Boolean checkoutStatus = checkoutDetail.getValue();
-            expectedReturnDate = checkoutDetail.getKey();
+        int librarianId = -1;
+        String librarianName = null;
 
-            isCheckedOut = (checkoutStatus == null || checkoutStatus);
+        int memberId = -1;
+        String memberName = null;
+
+        if (checkoutDetail.isPresent()) {
+            Boolean checkoutStatus = checkoutDetail.get().getStatus() != CheckoutStatus.RETURNED;
+            expectedReturnDate = checkoutDetail.get().getReturnDate();
+
+            librarianId = checkoutDetail.get().getHandledByLibrarian().getId();
+            librarianName = checkoutDetail.get().getHandledByLibrarian().getFirstName() + " " + checkoutDetail.get().getHandledByLibrarian().getLastName();
+
+            memberId = checkoutDetail.get().getMember().getId();
+            memberName = checkoutDetail.get().getMember().getFirstName() + " " + checkoutDetail.get().getMember().getLastName();
+
+            isCheckedOut = checkoutStatus;
             log.debug("Book [{}] checkout info - status: {}, return date: {}", id, checkoutStatus, expectedReturnDate);
         }
 
-        model.addAttribute("book", book);
+        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
+
+        model.addAttribute("book", bookDTO);
         model.addAttribute("isCheckedOut", isCheckedOut);
+        model.addAttribute("librarianId", librarianId);
+        model.addAttribute("memberId", memberId);
+        model.addAttribute("librarianName", librarianName);
+        model.addAttribute("memberName", memberName);
         model.addAttribute("expectedReturnDate", expectedReturnDate != null ? expectedReturnDate.toString() : "None");
+        model.addAttribute("currentUser", user);
+        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
 
         return "bookDetail";
     }
 
+    @GetMapping("/edit/{id}")
+    public String showEditBookForm(@PathVariable int id,
+                                   Model model,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
+
+        Book book = bookService.findById(id);
+        BookViewModel vm = BookMapper.entityToVm(book);
+
+        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
+
+        model.addAttribute("book", vm);
+        model.addAttribute("currentUser", user);
+        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+
+        return "editBooks";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editBook(@PathVariable int id,
+                           @Valid @ModelAttribute("book") BookViewModel bookViewModel,
+                           BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return "editBooks";
+        }
+
+        bookViewModel.setId(id);
+
+        bookService.updateBook(BookMapper.vmToEntity(bookViewModel));
+
+        return "redirect:/books";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteBook(
+            @PathVariable int id,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        var currentUser = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
+
+        if (!currentUser.getFlags().name().equals("ADMIN")) {
+            return "redirect:/accessDenied";
+        }
+
+        bookService.deleteBook(id);
+
+        return "redirect:/books";
+    }
 }

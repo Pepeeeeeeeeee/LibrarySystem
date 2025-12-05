@@ -1,7 +1,6 @@
 package be.kdg.programming3.dto;
 
 import be.kdg.programming3.domain.enums.Department;
-
 import java.time.LocalDate;
 
 public class LibrarianDTO {

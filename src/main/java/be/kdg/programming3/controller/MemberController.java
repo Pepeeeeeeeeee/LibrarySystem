@@ -1,17 +1,17 @@
 package be.kdg.programming3.controller;
 
+import be.kdg.programming3.domain.User;
 import be.kdg.programming3.dto.MemberDTO;
 import be.kdg.programming3.mapper.MemberMapper;
 import be.kdg.programming3.domain.Member;
-import be.kdg.programming3.service.MemberService;
-import be.kdg.programming3.service.EntityFactoryService;
-import be.kdg.programming3.service.FilteringService;
+import be.kdg.programming3.service.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -23,20 +23,25 @@ public class MemberController {
     private final FilteringService filteringService;
     private static final Logger log = LoggerFactory.getLogger(MemberController.class);
     private static final int PAGE_SIZE = 20;
+    private final UserService userService;
+    private final AuthService authService;
 
     public MemberController(MemberService memberService,
                             EntityFactoryService entityFactoryService,
-                            FilteringService filteringService) {
+                            FilteringService filteringService, UserService userService, AuthService authService) {
         this.memberService = memberService;
         this.entityFactoryService = entityFactoryService;
         this.filteringService = filteringService;
+        this.userService = userService;
+        this.authService = authService;
     }
 
     @GetMapping
     public String listMembers(@RequestParam(defaultValue = "1") int page,
                               Model model,
                               @RequestParam(required = false) List<String> fields,
-                              @RequestParam(required = false) String query) {
+                              @RequestParam(required = false) String query,
+                              HttpServletRequest request, HttpServletResponse response) {
 
         List<Member> allMembers = memberService.getAllMembers();
         int totalMembers = allMembers.size();
@@ -47,6 +52,8 @@ public class MemberController {
 
         List<Member> membersPage = allMembers.subList(fromIndex, toIndex);
 
+        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
+
         model.addAttribute("members", membersPage.stream().map(MemberMapper::toDTO).toList());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
@@ -54,6 +61,8 @@ public class MemberController {
         model.addAttribute("memberFields", filteringService.preloadDomainFields(Member.class));
         model.addAttribute("selectedFields", fields);
         model.addAttribute("query", query);
+        model.addAttribute("currentUser", user);
+        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
 
         log.debug("Listed members page {} of {}", page, totalPages);
         return "members";
@@ -78,17 +87,5 @@ public class MemberController {
         model.addAttribute("query", query);
 
         return "members";
-    }
-
-    @GetMapping("/add")
-    public String showAddMemberForm(Model model) {
-        model.addAttribute("member", new MemberDTO());
-        return "addMember";
-    }
-
-    @PostMapping("/add")
-    public String addMember(@ModelAttribute("member") MemberDTO memberDTO) {
-        memberService.addMember(MemberMapper.toEntity(memberDTO));
-        return "redirect:/members";
     }
 }

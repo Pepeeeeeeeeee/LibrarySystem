@@ -1,7 +1,9 @@
 package be.kdg.programming3.mapper;
 
+import be.kdg.programming3.domain.Book;
 import be.kdg.programming3.domain.Librarian;
 import be.kdg.programming3.dto.LibrarianDTO;
+import be.kdg.programming3.viewModel.BookViewModel;
 import be.kdg.programming3.viewModel.LibrarianViewModel;
 
 public class LibrarianMapper {
@@ -46,8 +48,22 @@ public class LibrarianMapper {
                 vm.isFullTime(),
                 vm.getEmployeePhotoUrl(),
                 vm.getEmail(),
-                vm.getPhoneNumber() != null ? Integer.parseInt(vm.getPhoneNumber()) : 0
+                vm.getPhoneNumber()
         );
     }
 
+    public static LibrarianViewModel entityToVm(Librarian librarian) {
+        return new LibrarianViewModel(
+                librarian.getId(),
+                librarian.getFirstName(),
+                librarian.getLastName(),
+                librarian.getHireDate(),
+                librarian.getSalary(),
+                librarian.getDepartment(),
+                librarian.isFullTime(),
+                librarian.getEmployeePhotoUrl(),
+                librarian.getEmail(),
+                librarian.getPhoneNumber()
+        );
+    }
 }
