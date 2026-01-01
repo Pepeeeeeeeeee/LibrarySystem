@@ -27,7 +27,7 @@ public class HomeController {
         User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
 
         model.addAttribute("userLoggedIn", authService.checkIsAuth(request) ? user : null);
-        model.addAttribute("userPhotoUrl", authService.checkIsAuth(request) ? memberService.findById(user.getId()).getProfileImageUrl() : null);
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
         return "home";
     }
 

@@ -29,9 +29,9 @@ public class InMemoryBookCheckoutRepository implements CheckoutRepository {
     }
 
     @Override
-    public int save(BookCheckout bookCheckout) {
+    public BookCheckout save(BookCheckout bookCheckout) {
         dataRepository.findAllBookCheckouts().add(bookCheckout);
-        return 1;
+        return null;
     }
 
     @Override
@@ -53,11 +53,15 @@ public class InMemoryBookCheckoutRepository implements CheckoutRepository {
 
     @Override
     public List<Optional<BookCheckout>> findByLibrarianId(int librarianId) {
-        return null;
+        return dataRepository.findAllBookCheckouts().stream().
+                filter(c -> c.getHandledByLibrarian().getId() == librarianId).map(Optional::of)
+                .toList();
     }
 
     @Override
     public List<Optional<BookCheckout>> findByMemberId(int memberId) {
-        return List.of();
+        return dataRepository.findAllBookCheckouts().stream().
+                filter(c -> c.getMember().getId() == memberId).map(Optional::of)
+                .toList();
     }
 }

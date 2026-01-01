@@ -1,7 +1,6 @@
 package be.kdg.programming3.controller;
 
 import be.kdg.programming3.domain.User;
-import be.kdg.programming3.dto.MemberDTO;
 import be.kdg.programming3.mapper.MemberMapper;
 import be.kdg.programming3.domain.Member;
 import be.kdg.programming3.service.*;
@@ -19,7 +18,6 @@ import java.util.function.Predicate;
 @RequestMapping("/members")
 public class MemberController {
     private final MemberService memberService;
-    private final EntityFactoryService entityFactoryService;
     private final FilteringService filteringService;
     private static final Logger log = LoggerFactory.getLogger(MemberController.class);
     private static final int PAGE_SIZE = 20;
@@ -27,10 +25,8 @@ public class MemberController {
     private final AuthService authService;
 
     public MemberController(MemberService memberService,
-                            EntityFactoryService entityFactoryService,
                             FilteringService filteringService, UserService userService, AuthService authService) {
         this.memberService = memberService;
-        this.entityFactoryService = entityFactoryService;
         this.filteringService = filteringService;
         this.userService = userService;
         this.authService = authService;
@@ -62,7 +58,7 @@ public class MemberController {
         model.addAttribute("selectedFields", fields);
         model.addAttribute("query", query);
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
 
         log.debug("Listed members page {} of {}", page, totalPages);
         return "members";

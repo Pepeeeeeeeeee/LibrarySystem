@@ -205,7 +205,7 @@ public class CheckoutJdbcRepository implements CheckoutRepository {
     }
 
     @Override
-    public int save(BookCheckout checkout) {
+    public BookCheckout save(BookCheckout checkout) {
         String sql = """
             INSERT INTO book_checkout
             (id, book_id, member_id, checkout_date, due_date, return_date, renewed, status, handled_by_librarian_id)
@@ -223,7 +223,7 @@ public class CheckoutJdbcRepository implements CheckoutRepository {
                 .param("renewed", checkout.isRenewed())
                 .param("status", checkout.getStatus().name())
                 .param("librarian_id", checkout.getHandledByLibrarian() != null ? checkout.getHandledByLibrarian().getId() : null)
-                .update();
+                .update() != 0 ? checkout : null;
     }
 
     @Override

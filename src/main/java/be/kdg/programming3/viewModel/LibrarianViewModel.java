@@ -40,6 +40,6 @@ public class LibrarianViewModel {
     @NotBlank(message = "{validation.librarian.email.notBlank}")
     private String email;
 
-    @Pattern(regexp = "^\\+?[0-9]{8,15}$", message = "{validation.librarian.phoneNumber.pattern}")
+    @NotNull(message = "{validation.librarian.phoneNumber.pattern}")
     private int phoneNumber;
 }

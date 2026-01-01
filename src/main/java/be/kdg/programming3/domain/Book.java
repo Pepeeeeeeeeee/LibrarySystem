@@ -1,55 +1,76 @@
 package be.kdg.programming3.domain;
 
 import be.kdg.programming3.domain.enums.Genre;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import static java.lang.String.format;
 
+@Entity
+@Table(name = "books")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "book_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("BOOK")
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class Book {
-    private final int id;
-    private final String isbn;
-    private final String title;
-    private final String author;
-    private final LocalDate publicationDate;
-    private final int pages;
-    private final double price;
-    private final Genre genre;
-    private final boolean isAvailable;
-    private final String coverImageUrl;
-    private final String location;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private String isbn;
+    private String title;
+    private String author;
+    private LocalDate publicationDate;
+    private int pages;
+    private double price;
+    @Enumerated(EnumType.STRING)
+    private Genre genre;
+
+    private boolean isAvailable;
+    private String coverImageUrl;
+    private String location;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookCheckout> checkouts = new ArrayList<>();
 
-    public Book addCheckout(BookCheckout checkout) {
-        if (!checkouts.contains(checkout)) {
-            checkouts.add(checkout);
-        }
-        return this;
+
+    /**
+     * LEGACY constructor — DO NOT USE for new code.
+     * ID is ignored by JPA when persisting.
+     */
+    @Deprecated
+    public Book(
+            int id,
+            String isbn,
+            String title,
+            String author,
+            LocalDate publicationDate,
+            int pages,
+            double price,
+            Genre genre,
+            boolean isAvailable,
+            String coverImageUrl,
+            String location
+    ) {
+        this.id = id;
+        this.isbn = isbn;
+        this.title = title;
+        this.author = author;
+        this.publicationDate = publicationDate;
+        this.pages = pages;
+        this.price = price;
+        this.genre = genre;
+        this.isAvailable = isAvailable;
+        this.coverImageUrl = coverImageUrl;
+        this.location = location;
     }
 
-    @Override
-    public String toString() {
-        return format("""
-                Book:
-                Id = %d
-                Isbn = %s
-                Title = %s
-                Author = %s
-                Publication date = %s
-                Pages = %d
-                Price = %f
-                Genre = %s
-                Available = %b
-                Location = %s
-                Members Count = %d
-                
-                """, id, isbn, title, author, publicationDate, pages, price, genre, isAvailable, location, checkouts.size());
+    public void addCheckout(BookCheckout checkout) {
+        checkouts.add(checkout);
+        checkout.setBook(this);
     }
 }

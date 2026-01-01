@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface UserRepository {
     List<User> findAll();
-    void save(User user);
+    User save(User user);
     String getToken(int id);
     int updateToken(String token, int id);
     User getUserById(int id);
@@ -15,4 +15,5 @@ public interface UserRepository {
     User registerUser(int id, String username, String password);
     boolean checkIfUsernameExists(String username);
     int updateUsername(int id, String username);
+    int updatePassword(int id, String password);
 }

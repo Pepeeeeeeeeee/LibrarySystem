@@ -1,23 +1,23 @@
 package be.kdg.programming3.service;
 
 import be.kdg.programming3.domain.BookCheckout;
-import be.kdg.programming3.repository.interfaces.DataRepository;
+import be.kdg.programming3.repository.interfaces.CheckoutRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 public class CheckoutService {
-    private final DataRepository repo;
+    private final CheckoutRepository repo;
 
-    public CheckoutService(DataRepository repo) {
+    public CheckoutService(CheckoutRepository repo) {
         this.repo = repo;
     }
 
     public List<BookCheckout> getAllBookCheckouts() {
-        return repo.findAllBookCheckouts();
+        return repo.findAll();
     }
 
     public void addCheckout(BookCheckout checkout) {
-        repo.findAllBookCheckouts().add(checkout);
+        repo.save(checkout);
     }
 }

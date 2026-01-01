@@ -39,7 +39,14 @@ public class AuthService {
         }
     }
 
-
+    /**
+     * Generates a new authentication token, stores it as an HTTP-only cookie,
+     * and persists the token in the database for the given user.
+     *
+     * @param response HTTP response used to add the cookie
+     * @param id       user ID for which the token is generated
+     * @return the generated token string, or {@code null} if user ID is invalid
+     */
     private String storeToken(HttpServletResponse response, int id) {
         if(id == -1) return null;
         UUID token = UUID.randomUUID();
@@ -55,6 +62,14 @@ public class AuthService {
         return token.toString();
     }
 
+    /**
+     * Stores authentication state cookies indicating whether the user
+     * is authenticated and what their user ID is.
+     *
+     * @param response HTTP response used to add cookies
+     * @param isAuth   whether the user is authenticated
+     * @param id       authenticated user ID
+     */
     private void addIsAuthenticated(HttpServletResponse response, boolean isAuth, int id) {
         Cookie isUserAuth = new Cookie("isAuth", Boolean.toString(isAuth));
         Cookie uid = new Cookie("uid", Integer.toString(id));
@@ -67,17 +82,22 @@ public class AuthService {
     }
 
     /**
-     * @return 0 -> Token authenticated successfully, regenerated lifetime <br/> 1 - > Token authenticated unsuccessfully (possibly missing), regenerated token, send to login*/
+     * Retrieves and validates authentication tokens from cookies.
+     *
+     * If a valid token is found:
+     * - It may be refreshed depending on {@code generateToken}
+     * - Authentication cookies are updated
+     *
+     * @param request  incoming HTTP request
+     * @param response HTTP response for updating cookies
+     * @return a map entry where:
+     *         key = 0 if authenticated, 1 otherwise
+     *         value = refreshed token (or null)
+     */
     public Map.Entry<Integer, String> getTokensFromCookies(HttpServletRequest request, HttpServletResponse response) {
         String oldToken = checkValidToken(request);
         String token = null;
         boolean validToken = oldToken != null;
-        //service.getUserByToken(Arrays.stream(request.getCookies())
-        //                .filter(c -> c.getName().startsWith(COOKIE_PREFIX) && c.getValue() != null)
-        //                .map(Cookie::getValue)
-        //                .findFirst()
-        //                .orElse(null)
-        //        ).getId()
 
         if(generateToken){
             token = storeToken(response, service.getUserByToken(oldToken).getId());
@@ -91,6 +111,13 @@ public class AuthService {
         }
     }
 
+
+    /**
+     * Checks whether the current request contains a valid authentication flag.
+     *
+     * @param request HTTP request containing cookies
+     * @return {@code true} if authenticated, otherwise {@code false}
+     */
     public boolean checkIsAuth(HttpServletRequest request){
         boolean valid = false;
         Cookie[] cookies = request.getCookies();
@@ -105,6 +132,13 @@ public class AuthService {
         return valid;
     }
 
+    /**
+     * Validates the authentication token found in cookies against
+     * the token stored in the database.
+     *
+     * @param request HTTP request containing cookies
+     * @return valid token string, or {@code null} if invalid
+     */
     private String checkValidToken(HttpServletRequest request){
         boolean valid = false;
         String token = null;
@@ -112,6 +146,9 @@ public class AuthService {
         if (cookies != null) {
             for (Cookie c : cookies) {
                 if (c.getName().startsWith(COOKIE_PREFIX) && c.getValue() != null) {
+                    if(service.getUserByToken(c.getValue()) == null){
+                        break;
+                    }
                     valid = authToken(c.getValue(), service.getUserByToken(c.getValue()).getId());
                     generateToken = valid;
                     token = c.getValue();
@@ -122,14 +159,32 @@ public class AuthService {
         return valid ? token : null;
     }
 
+    /**
+     * Compares a provided token with the token stored for the user.
+     *
+     * @param token provided token
+     * @param id    user ID
+     * @return {@code true} if tokens match
+     */
     private boolean authToken(String token, int id){
         return token.equals(service.getToken(id));
     }
 
+    /**
+     * Validates login credentials, sets authentication cookies,
+     * and generates a new token if authentication succeeds.
+     *
+     * @param username user username
+     * @param password plaintext password
+     * @param response HTTP response to store cookies
+     * @return {@code true} if login is successful
+     */
     public boolean validateLogin(String username, String password, HttpServletResponse response) {
         System.err.println(hashPassword(password));
         User user = service.authUser(username, hashPassword(password));
-        System.out.println(user.toString());
+        if(user == null){
+            return false;
+        }
         boolean res =  user.getUsername().equals(username) && user.getPassword().equals(hashPassword(password));
         addIsAuthenticated(response, res, user.getId());
         generateToken = res;
@@ -137,6 +192,15 @@ public class AuthService {
         return res;
     }
 
+    /**
+     * Validates registration data and temporarily stores credentials in cookies.
+     *
+     * @param username      desired username
+     * @param password      password
+     * @param passwordConf  password confirmation
+     * @param response      HTTP response to store cookies
+     * @return {@code true} if data is valid
+     */
     public boolean checkRegisterDataValidity(String username, String password, String passwordConf, HttpServletResponse response){
         if(!password.equals(passwordConf)) return false;
         if(service.checkIfUsernameExists(username)) return false;
@@ -144,6 +208,10 @@ public class AuthService {
         return true;
     }
 
+    /**
+     * Stores temporary user credentials in HTTP-only cookies
+     * for use during the registration flow.
+     */
     private void storeUserCred(HttpServletResponse response, UserDTO user) {
         Cookie userName = new Cookie("userName", user.getUsername());
         Cookie pass = new Cookie("pass", user.getPassword());
@@ -159,6 +227,9 @@ public class AuthService {
         response.addCookie(pass);
     }
 
+    /**
+     * Retrieves and clears temporary registration credentials from cookies.
+     */
     private Map.Entry<String, String> getUserCred(HttpServletRequest request){
         String userName = null;
         String pass = null;
@@ -179,6 +250,10 @@ public class AuthService {
         return new AbstractMap.SimpleEntry<>(userName, pass);
     }
 
+    /**
+     * Completes the registration process by creating a user
+     * and authenticating them immediately.
+     */
     public void handleRegister(HttpServletResponse response, HttpServletRequest request, int id){
         Map.Entry<String, String> userCred = getUserCred(request);
         User user = service.registerUser(id, userCred.getKey(), userCred.getValue());
@@ -187,6 +262,25 @@ public class AuthService {
         storeToken(response, user != null ? user.getId() : -1);
     }
 
+    /**
+     * Retrieves the authenticated user ID from cookies.
+     */
+    public int getUIDFromCookies(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if (c.getName().startsWith("uid") && c.getValue() != null) {
+                    return Integer.parseInt(c.getValue());
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Logs out the user by clearing all authentication-related cookies
+     * and invalidating the stored token.
+     */
     public void logout(HttpServletRequest request, HttpServletResponse response){
         Cookie[] cookies = request.getCookies();
         this.generateToken = false;
@@ -214,5 +308,25 @@ public class AuthService {
                 }
             }
         }
+    }
+
+    /**
+     * Updates the user's password after validating the old password.
+     *
+     * @param oldPassword current password
+     * @param newPassword new password
+     * @param request     HTTP request containing user ID
+     * @return 1 if successful, 0 otherwise
+     */
+    public int updatePassword(String oldPassword, String newPassword, HttpServletRequest request){
+        int id = getUIDFromCookies(request);
+        User user = service.getUserById(id);
+        User userAuth = service.authUser(user.getUsername(), hashPassword(oldPassword));
+        if(userAuth != null){
+            service.updatePassword(id, hashPassword(newPassword));
+            return 1;
+        }
+
+        return 0;
     }
 }

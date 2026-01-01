@@ -56,7 +56,7 @@
                             <span th:text="#{librarians.button.back}"></span>
                         </a>
 
-                        <div class="d-flex gap-2" th:if="${currentUser.flags.name() == 'ADMIN'}">
+                        <div class="d-flex gap-2" th:if="${currentUser != null and currentUser.flags.name() == 'ADMIN'}">
                             <a th:href="@{'/librarians/edit/' + ${librarian.id}}" class="btn btn-warning mt-4">
                                 <i class="bi bi-pencil-square"></i> <span th:text="#{librarians.button.edit}"></span>
                             </a>

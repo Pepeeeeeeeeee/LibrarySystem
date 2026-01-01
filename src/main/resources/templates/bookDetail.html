@@ -26,6 +26,12 @@
                               th:text="${isCheckedOut} ? #{books.label.notAvailable} : #{books.label.available}">
                         </span>
                     </div>
+                    <div th:if="${book.comic}">
+                        <p class="mt-2">
+                            <strong>Artist:</strong>
+                            <span th:text="${book.artist}"></span>
+                        </p>
+                    </div>
 
                     <p class="text-muted mt-1">
                         <strong th:text="#{books.field.author} + ':'"></strong> <span th:text="${book.author}"></span><br>

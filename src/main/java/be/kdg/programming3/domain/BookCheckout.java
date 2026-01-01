@@ -1,26 +1,53 @@
 package be.kdg.programming3.domain;
 
 import be.kdg.programming3.domain.enums.CheckoutStatus;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalDate;
-import static java.lang.String.format;
 
+@Entity
+@Table(name = "book_checkouts")
 @Data
+@NoArgsConstructor
 public class BookCheckout {
-    private final int id;
-    private final Book book;
-    private final Member member;
-    private final LocalDate checkoutDate;
-    private final LocalDate dueDate;
-    private LocalDate returnDate;
-    private final boolean renewed;
-    private final CheckoutStatus status;
-    private final Librarian handledByLibrarian;
 
-    public BookCheckout(int id, Book book, Member member, LocalDate checkoutDate,
-                        LocalDate dueDate, LocalDate returnDate,
-                        boolean renewed, CheckoutStatus status,
-                        Librarian handledByLibrarian) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @ManyToOne
+    private Book book;
+
+    @ManyToOne
+    private Member member;
+
+    private LocalDate checkoutDate;
+    private LocalDate dueDate;
+    private LocalDate returnDate;
+    private boolean renewed;
+
+    @Enumerated(EnumType.STRING)
+    private CheckoutStatus status;
+
+    @ManyToOne
+    private Librarian handledByLibrarian;
+
+    /**
+     * LEGACY constructor — DO NOT USE for new code.
+     */
+    @Deprecated
+    public BookCheckout(
+            int id,
+            Book book,
+            Member member,
+            LocalDate checkoutDate,
+            LocalDate dueDate,
+            LocalDate returnDate,
+            boolean renewed,
+            CheckoutStatus status,
+            Librarian handledByLibrarian
+    ) {
         this.id = id;
         this.book = book;
         this.member = member;
@@ -31,35 +58,9 @@ public class BookCheckout {
         this.status = status;
         this.handledByLibrarian = handledByLibrarian;
 
+        // Maintain bidirectional consistency (legacy behavior)
         book.addCheckout(this);
-    }
-
-    @Override
-    public String toString() {
-        return format("""
-            BookCheckout:
-            Id = %d
-            Book Title = %s
-            Book ISBN = %s
-            Member = %s %s
-            Checkout Date = %s
-            Due Date = %s
-            Return Date = %s
-            Renewed = %b
-            Status = %s
-            Handled By = %s
-            """,
-                id,
-                book.getTitle(),
-                book.getIsbn(),
-                member.getFirstName(),
-                member.getLastName(),
-                checkoutDate,
-                dueDate,
-                returnDate != null ? returnDate : "Not returned",
-                renewed,
-                status,
-                handledByLibrarian != null ? handledByLibrarian.getFirstName() + " " + handledByLibrarian.getLastName() : "N/A"
-        );
+        member.getCheckouts().add(this);
     }
 }
+

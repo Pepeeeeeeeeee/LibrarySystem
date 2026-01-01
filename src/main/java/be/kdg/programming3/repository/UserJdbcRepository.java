@@ -1,5 +1,6 @@
 package be.kdg.programming3.repository;
 
+import be.kdg.programming3.domain.Member;
 import be.kdg.programming3.domain.User;
 import be.kdg.programming3.domain.enums.Flags;
 import be.kdg.programming3.repository.interfaces.UserRepository;
@@ -25,14 +26,20 @@ public class UserJdbcRepository implements UserRepository {
     private static final class UserRowMapper implements RowMapper<User> {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new User(
-                    rs.getInt("id"),
-                    rs.getInt("member_id"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    Flags.valueOf(rs.getString("flags")),
-                    rs.getString("token")
-            );
+            User user = new User();
+
+            user.setId(rs.getInt("id"));
+
+            Member member = new Member();
+            member.setId(rs.getInt("member_id"));
+            user.setMember(member);
+
+            user.setUsername(rs.getString("username"));
+            user.setPassword(rs.getString("password"));
+            user.setFlags(Flags.valueOf(rs.getString("flags")));
+            user.setToken(rs.getString("token"));
+
+            return user;
         }
     }
 
@@ -50,8 +57,8 @@ public class UserJdbcRepository implements UserRepository {
     }
 
     @Override
-    public void save(User user) {
-
+    public User save(User user) {
+        return null;
     }
 
     @Override
@@ -89,13 +96,7 @@ public class UserJdbcRepository implements UserRepository {
     @Override
     public User getUserByMemberId(int id) {
         String sql = "Select * FROM users WHERE member_id = :id";
-        return jdbcClient.sql(sql).param("id", id).query(rs -> {
-            User user = null;
-            while(rs.next()){
-                user = new UserRowMapper().mapRow(rs, rs.getRow());
-            }
-            return user;
-        });
+        return jdbcClient.sql(sql).param("id", id).query(new UserRowMapper()).optional().orElse(null);
     }
 
     @Override
@@ -147,5 +148,11 @@ public class UserJdbcRepository implements UserRepository {
     public int updateUsername(int id, String username) {
         String sql = "UPDATE users SET username = :username WHERE id = :id";
         return jdbcClient.sql(sql).param("username", username).param("id", id).update();
+    }
+
+    @Override
+    public int updatePassword(int id, String password) {
+        String sql = "UPDATE users SET password = :password WHERE id = :id";
+        return jdbcClient.sql(sql).param("password", password).param("id", id).update();
     }
 }

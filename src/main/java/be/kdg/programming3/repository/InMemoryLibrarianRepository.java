@@ -24,22 +24,25 @@ public class InMemoryLibrarianRepository implements LibrarianRepository {
 
     @Override
     public Librarian findById(int id) {
+        return dataRepository.findAllLibrarians().stream().filter(b -> b.getId() == id).findFirst().orElse(null);
+    }
+
+    @Override
+    public Librarian save(Librarian librarian) {
+        dataRepository.findAllLibrarians().add(librarian);
         return null;
     }
 
     @Override
-    public int save(Librarian librarian) {
-        dataRepository.findAllLibrarians().add(librarian);
-        return 1;
-    }
-
-    @Override
     public int update(Librarian librarian) {
-        return 0;
+        boolean updated = dataRepository.findAllLibrarians().removeIf(b -> b.getId() == librarian.getId());
+        save(librarian);
+        return updated ? 1 : 0;
     }
 
     @Override
     public int delete(int id) {
-        return 0;
+        boolean updated = dataRepository.findAllLibrarians().removeIf(b -> b.getId() == id);
+        return updated ? 1 : 0;
     }
 }

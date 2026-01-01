@@ -62,7 +62,7 @@ public class LibrarianController {
         model.addAttribute("query", query);
         model.addAttribute("selectedFields", fields);
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
 
 
         log.debug("Listed all librarians");
@@ -88,7 +88,7 @@ public class LibrarianController {
         model.addAttribute("currentPage", 1);
         model.addAttribute("totalPages", 1);
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
         model.addAttribute("selectedFields", fields);
         model.addAttribute("query", query);
 
@@ -102,7 +102,7 @@ public class LibrarianController {
         
         model.addAttribute("librarian", new LibrarianViewModel());
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
 
         return "addLibrarian";
     }
@@ -139,7 +139,7 @@ public class LibrarianController {
         model.addAttribute("librarian", librarianDTO);
         model.addAttribute("checkouts", checkouts);
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
 
 
         return "librarianDetail";
@@ -158,7 +158,7 @@ public class LibrarianController {
         
         model.addAttribute("librarian", vm);
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
 
 
         return "editLibrarian";
@@ -166,10 +166,11 @@ public class LibrarianController {
 
     @PostMapping("/edit/{id}")
     public String editLibrarian(@PathVariable int id,
-                           @Valid @ModelAttribute("book") LibrarianViewModel librarianViewModel,
+                           @Valid @ModelAttribute("librarian") LibrarianViewModel librarianViewModel,
                            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            System.err.println(bindingResult);
             return "editLibrarian";
         }
 
@@ -177,7 +178,7 @@ public class LibrarianController {
 
         librarianService.update(LibrarianMapper.vmToEntity(librarianViewModel));
 
-        return "redirect:/librarian";
+        return "redirect:/librarians";
     }
 
     @GetMapping("/delete/{id}")

@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/profile")
@@ -32,7 +33,7 @@ public class ProfileController {
     public String showProfile(Model model, HttpServletRequest request, HttpServletResponse response) {
         User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
 
-        Member member = memberService.findById(user.getMemberId());
+        Member member = memberService.findById(authService.getUIDFromCookies(request));
 
         ProfileFormDTO form = ProfileFormDTO.toProfileForm(member, user);
 
@@ -64,7 +65,7 @@ public class ProfileController {
     @PostMapping("/update")
     public String updateUserData(@ModelAttribute("profile") ProfileFormDTO dto, Model model, HttpServletRequest request, HttpServletResponse response){
         User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
-        Member member = memberService.findById(user.getMemberId());
+        Member member = memberService.findById(user.getMember().getId());
 
         MemberDTO memberDTO = MemberMapper.toDTO(member);
         memberDTO.setFirstName(dto.getFirstName());
@@ -77,4 +78,25 @@ public class ProfileController {
 
         return "redirect:/profile";
     }
+
+    @PostMapping("/change-password")
+    public String updatePassword(@RequestParam String oldPassword, @RequestParam String newPassword, HttpServletRequest request){
+        authService.updatePassword(oldPassword, newPassword, request);
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/update-image")
+    public String updateProfileImage(@RequestParam("imageFile") MultipartFile imageFile, HttpServletRequest request) {
+
+        if (imageFile.isEmpty()) {
+            return "redirect:/profile";
+        }
+
+        int userId = authService.getUIDFromCookies(request);
+        User user = userService.getUserById(userId);
+
+        memberService.updateImage(imageFile, userId, user.getMember().getId());
+        return "redirect:/profile";
+    }
+
 }

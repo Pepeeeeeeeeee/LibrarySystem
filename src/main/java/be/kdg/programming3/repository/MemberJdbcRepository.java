@@ -55,7 +55,7 @@ public class MemberJdbcRepository implements MemberRepository {
     }
 
     @Override
-    public Member findById(int id) {
+    public Member getById(int id) {
         String sql = """
             SELECT id, first_name, last_name, membership_date,
                    membership_type, email, phone_number,
@@ -73,17 +73,11 @@ public class MemberJdbcRepository implements MemberRepository {
     @Override
     public Member findByEmail(String email) {
         String sql = "Select * from member where email = :email";
-        return jdbcClient.sql(sql).param("email", email).query(rs -> {
-           Member member = null;
-           while(rs.next()) {
-               member = new MemberRowMapper().mapRow(rs, rs.getRow());
-           }
-           return member;
-        });
+        return jdbcClient.sql(sql).param("email", email).query(new MemberRowMapper()).optional().orElse(null);
     }
 
     @Override
-    public int save(String firstName, String lastName, LocalDate membershipDate, MembershipType membershipType, String email, String phoneNumber, boolean activeMembership) {
+    public Member save(String firstName, String lastName, LocalDate membershipDate, MembershipType membershipType, String email, String phoneNumber, boolean activeMembership) {
         String sql = """
             INSERT INTO member (first_name, last_name, membership_date,
                                  membership_type, email, phone_number,
@@ -99,7 +93,7 @@ public class MemberJdbcRepository implements MemberRepository {
                 email,
                 phoneNumber,
                 activeMembership
-        );
+        ) != 0 ? new Member(-1 ,firstName, lastName, membershipDate, membershipType, email, phoneNumber, activeMembership, "") : null;
     }
 
     @Override
@@ -134,5 +128,11 @@ public class MemberJdbcRepository implements MemberRepository {
     public int delete(int id) {
         String sql = "DELETE FROM member WHERE id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public int updateImage(int memberId, String imagePath) {
+        String sql = "UPDATE member SET profile_image_url = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, imagePath, memberId);
     }
 }

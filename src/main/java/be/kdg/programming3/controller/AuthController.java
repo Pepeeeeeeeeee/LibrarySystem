@@ -3,7 +3,6 @@ package be.kdg.programming3.controller;
 import be.kdg.programming3.domain.enums.MembershipType;
 import be.kdg.programming3.service.AuthService;
 import be.kdg.programming3.service.MemberService;
-import be.kdg.programming3.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -15,13 +14,11 @@ import java.time.LocalDate;
 
 @Controller
 public class AuthController {
-    private final UserService userService;
     private final MemberService memberService;
     private final AuthService authService;
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
-    public AuthController(UserService userService, AuthService authService, MemberService memberService) {
-        this.userService = userService;
+    public AuthController(AuthService authService, MemberService memberService) {
         this.authService = authService;
         this.memberService = memberService;
     }
@@ -49,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String handleRegister(@RequestParam String username, @RequestParam String password, @RequestParam String passwordConf, Model model, HttpServletResponse response) {
+    public String handleRegister(@RequestParam String username, @RequestParam String password, @RequestParam String passwordConf, HttpServletResponse response) {
         boolean  valid = authService.checkRegisterDataValidity(username, password, passwordConf, response);
         if(valid) {
             return "redirect:/registerMember";

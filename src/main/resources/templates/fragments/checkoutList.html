@@ -50,7 +50,7 @@
 
                     <td>
                         <a class="btn btn-sm btn-outline-secondary"
-                           th:href="@{'/checkouts/' + ${checkout.id}}">
+                           th:href="@{'/checkouts/filter?fields=id&query=' + ${checkout.id}}">
                             Details
                         </a>
                     </td>

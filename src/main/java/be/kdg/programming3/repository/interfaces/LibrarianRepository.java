@@ -6,7 +6,7 @@ import java.util.List;
 public interface LibrarianRepository {
     List<Librarian> findAllLibrarians();
     Librarian findById(int id);
-    int save(Librarian librarian);
+    Librarian save(Librarian librarian);
     int update(Librarian librarian);
     int delete(int id);
 }

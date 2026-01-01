@@ -1,20 +1,48 @@
 package be.kdg.programming3.domain;
 
 import be.kdg.programming3.domain.enums.Flags;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "users")
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public class User {
-    private final int id;
-    private final int memberId;
-    private final String username;
-    private final String password;
-    private final Flags flags;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    private String username;
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Flags flags;
+
     private String token;
 
-    public void updateToken(String token) {
+    /**
+     * LEGACY constructor — DO NOT USE for new code.
+     */
+    @Deprecated
+    public User(
+            int id,
+            int memberId,
+            String username,
+            String password,
+            Flags flags,
+            String token
+    ) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.flags = flags;
         this.token = token;
     }
 }

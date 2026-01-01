@@ -4,7 +4,6 @@ import be.kdg.programming3.domain.enums.Genre;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
 @Data
@@ -22,4 +21,7 @@ public class BookDTO {
     private boolean available;
     private String coverImageUrl;
     private String location;
+
+    private boolean comic;
+    private String artist;
 }

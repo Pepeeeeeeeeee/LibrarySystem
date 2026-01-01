@@ -3,7 +3,6 @@ package be.kdg.programming3.service;
 import be.kdg.programming3.domain.User;
 import be.kdg.programming3.repository.interfaces.UserRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -57,4 +56,9 @@ public class UserService {
     public int updateUsername(int id, String username){
         return repo.updateUsername(id, username);
     }
+
+    public void updatePassword(int id, String password){
+        repo.updatePassword(id, password);
+    }
+
 }

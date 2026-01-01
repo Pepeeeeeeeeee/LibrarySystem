@@ -1,9 +1,7 @@
 package be.kdg.programming3.mapper;
 
-import be.kdg.programming3.domain.Book;
 import be.kdg.programming3.domain.Librarian;
 import be.kdg.programming3.dto.LibrarianDTO;
-import be.kdg.programming3.viewModel.BookViewModel;
 import be.kdg.programming3.viewModel.LibrarianViewModel;
 
 public class LibrarianMapper {

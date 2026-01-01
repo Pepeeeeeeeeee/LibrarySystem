@@ -28,6 +28,7 @@
                         <img th:src="${book.coverImageUrl}" class="card-img-top" alt="" th:alt="${book.title}">
                         <div class="card-body">
                             <h5 class="card-title" th:text="${book.title}"></h5>
+                            <span th:if="${book.comic}" class="badge bg-info text-dark mb-1"> Comic </span>
                             <p class="card-text" th:text="${book.author}"></p>
                             <p class="text-muted mb-0" th:text="${book.genre}"></p>
                             <p class="text-muted mb-0" th:text="'ISBN: ' + ${book.isbn}"></p>

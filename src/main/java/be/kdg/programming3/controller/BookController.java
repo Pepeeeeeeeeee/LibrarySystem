@@ -3,6 +3,7 @@ package be.kdg.programming3.controller;
 import be.kdg.programming3.domain.BookCheckout;
 import be.kdg.programming3.domain.User;
 import be.kdg.programming3.dto.BookDTO;
+import be.kdg.programming3.exception.BookProcessingException;
 import be.kdg.programming3.mapper.BookMapper;
 import be.kdg.programming3.service.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import be.kdg.programming3.domain.Book;
@@ -32,14 +32,6 @@ public class BookController {
     private final UserService userService;
     private final AuthService authService;
     private final MemberService memberService;
-
-    public BookController(BookService bookService, FilteringService filteringService, UserService userService, AuthService authService, MemberService memberService) {
-        this.bookService = bookService;
-        this.filteringService = filteringService;
-        this.userService = userService;
-        this.authService = authService;
-        this.memberService = memberService;
-    }
 
     @GetMapping
     public String listBooks(@RequestParam(defaultValue = "1") int page, Model model, @RequestParam(required = false) List<String> fields, @RequestParam(required = false) String query, HttpServletRequest request, HttpServletResponse response) {
@@ -60,13 +52,21 @@ public class BookController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalBooks", totalBooks);
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
         model.addAttribute("bookFields", filteringService.preloadDomainFields(Book.class));
         model.addAttribute("query", query);
         model.addAttribute("selectedFields", fields);
 
         log.debug("Listed all books");
         return "books";
+    }
+
+    public BookController(BookService bookService, FilteringService filteringService, UserService userService, AuthService authService, MemberService memberService) {
+        this.bookService = bookService;
+        this.filteringService = filteringService;
+        this.userService = userService;
+        this.authService = authService;
+        this.memberService = memberService;
     }
 
     @GetMapping("/filter")
@@ -84,7 +84,7 @@ public class BookController {
         model.addAttribute("currentPage", 1);
         model.addAttribute("totalPages", 1);
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
         model.addAttribute("selectedFields", fields);
         model.addAttribute("query", query);
 
@@ -97,7 +97,7 @@ public class BookController {
 
         model.addAttribute("book", new BookViewModel());
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
         return "addBook";
     }
 
@@ -157,7 +157,7 @@ public class BookController {
         model.addAttribute("memberName", memberName);
         model.addAttribute("expectedReturnDate", expectedReturnDate != null ? expectedReturnDate.toString() : "None");
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
 
         return "bookDetail";
     }
@@ -175,7 +175,7 @@ public class BookController {
 
         model.addAttribute("book", vm);
         model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", memberService.findById(user.getId()).getProfileImageUrl());
+        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
 
         return "editBooks";
     }
@@ -211,5 +211,12 @@ public class BookController {
         bookService.deleteBook(id);
 
         return "redirect:/books";
+    }
+
+    @ExceptionHandler(BookProcessingException.class)
+    public String handleBookProcessingException(BookProcessingException ex, Model model) {
+        log.error("Book processing error: {}", ex.getMessage(), ex);
+        model.addAttribute("errorMessage", ex.getMessage());
+        return "errorBook";
     }
 }

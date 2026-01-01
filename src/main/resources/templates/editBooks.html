@@ -91,6 +91,21 @@
                     <div class="text-danger small" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></div>
                 </div>
 
+                <div class="col-md-6">
+                    <label for="artist" class="form-label" th:text="#{books.field.artist}">Artist</label>
+                    <input type="text" id="artist" th:field="*{artist}" class="form-control" placeholder="Artist name">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('artist')}" th:errors="*{artist}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label d-block" th:text="#{books.field.comic}">Comic?</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" th:field="*{comic}" id="comicToggle" disabled>
+                        <label class="form-check-label" for="comicToggle" th:text="#{books.label.comic}">Comic</label>
+                    </div>
+                </div>
+
+
             </div>
 
             <div class="mt-4 text-center">
@@ -107,5 +122,18 @@
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const comicToggle = document.getElementById('comicToggle');
+        const artistField = document.getElementById('artist')?.closest('.col-md-6');
+
+        if (comicToggle && artistField) {
+            const toggleArtist = () => artistField.style.display = comicToggle.checked ? 'block' : 'none';
+            comicToggle.addEventListener('change', toggleArtist);
+            toggleArtist(); // initial state
+        }
+    });
+</script>
+
 </body>
 </html>

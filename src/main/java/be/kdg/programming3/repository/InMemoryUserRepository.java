@@ -22,40 +22,42 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public void save(User user) {
+    public User save(User user) {
         dataRepository.findAllUsers().add(user);
+        return user;
     }
 
     @Override
     public String getToken(int id) {
-        return dataRepository.findAllUsers().stream().filter(user -> user.getId() == id).findFirst().get().getToken();
+        return dataRepository.findAllUsers().stream().filter(user -> user.getId() == id).findFirst().orElse(null).getToken();
     }
 
     @Override
     public int updateToken(String token, int id) {
-        User user = dataRepository.findAllUsers().stream().filter(u -> u.getId() == id).findFirst().get();
+        User user = dataRepository.findAllUsers().stream().filter(u -> u.getId() == id).findFirst().orElse(null);
+        if(user == null) return 1;
         user.setToken(token);
         return 1;
     }
 
     @Override
     public User getUserById(int id) {
-        return dataRepository.findAllUsers().stream().filter(u -> u.getId() == id).findFirst().get();
+        return dataRepository.findAllUsers().stream().filter(u -> u.getId() == id).findFirst().orElse(null);
     }
 
     @Override
     public User getUserByMemberId(int id) {
-        return null;
+        return dataRepository.findAllUsers().stream().filter(u -> u.getMember().getId() == id).findFirst().orElse(null);
     }
 
     @Override
     public User getUserByCredentials(String username, String password) {
-        return dataRepository.findAllUsers().stream().filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password)).findFirst().get();
+        return dataRepository.findAllUsers().stream().filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password)).findFirst().orElse(null);
     }
 
     @Override
     public User getUserByToken(String token) {
-        return dataRepository.findAllUsers().stream().filter(u -> u.getToken().equals(token)).findFirst().get();
+        return dataRepository.findAllUsers().stream().filter(u -> u.getToken().equals(token)).findFirst().orElse(null);
     }
 
     @Override
@@ -65,11 +67,26 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public boolean checkIfUsernameExists(String username) {
-        return false;
+        return dataRepository.findAllUsers().stream().filter(u -> u.getUsername().equals(username)).findFirst().orElse(null) != null;
     }
 
     @Override
     public int updateUsername(int id, String username) {
-        return 0;
+        User oldUserData = dataRepository.findAllUsers().stream().filter(u -> u.getId() == id).findFirst().orElse(null);
+        if(oldUserData == null) return 0;
+        boolean updated = dataRepository.findAllUsers().removeIf(u -> u.getId() == id);
+        oldUserData.setUsername(username);
+        save(oldUserData);
+        return updated ? 1 : 0;
+    }
+
+    @Override
+    public int updatePassword(int id, String password) {
+        User oldUserData = dataRepository.findAllUsers().stream().filter(u -> u.getId() == id).findFirst().orElse(null);
+        if(oldUserData == null) return 0;
+        boolean updated = dataRepository.findAllUsers().removeIf(u -> u.getId() == id);
+        oldUserData.setPassword(password);
+        save(oldUserData);
+        return updated ? 1 : 0;
     }
 }

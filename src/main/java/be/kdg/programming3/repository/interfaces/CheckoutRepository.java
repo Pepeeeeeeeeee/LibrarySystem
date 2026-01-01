@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface CheckoutRepository {
     List<BookCheckout> findAll();
     BookCheckout findById(int id);
-    int save(BookCheckout checkout);
+    BookCheckout save(BookCheckout checkout);
     int updateReturnDate(int id, java.time.LocalDate returnDate);
     int delete(int id);
     Optional<BookCheckout> findByBookId(int bookId);

@@ -66,7 +66,7 @@ public class LibrarianJdbcRepository implements LibrarianRepository {
     }
 
     @Override
-    public int save(Librarian librarian) {
+    public Librarian save(Librarian librarian) {
         String sql = """
             INSERT INTO librarian (first_name, last_name, hire_date, salary,
                                     department, full_time, employee_photo_url,
@@ -84,7 +84,7 @@ public class LibrarianJdbcRepository implements LibrarianRepository {
                 librarian.getEmployeePhotoUrl(),
                 librarian.getEmail(),
                 librarian.getPhoneNumber()
-        );
+        ) != 0 ? librarian : null;
     }
 
     @Override

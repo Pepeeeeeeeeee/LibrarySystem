@@ -6,7 +6,7 @@ import java.util.List;
 public interface BookRepository {
     List<Book> findAllBooks();
     Book findById(int id);
-    int save(Book book);
+    Book save(Book book);
     int updateAvailability(int id, boolean available);
     int delete(int id);
     int updateBook(Book book);

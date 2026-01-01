@@ -24,13 +24,13 @@ public class InMemoryBookRepository implements BookRepository {
 
     @Override
     public Book findById(int id) {
-        return null;
+        return dataRepository.findAllBooks().stream().filter(book -> book.getId() == id).findFirst().orElse(null);
     }
 
     @Override
-    public int save(Book book) {
+    public Book save(Book book) {
         dataRepository.findAllBooks().add(book);
-        return 0;
+        return null;
     }
 
     @Override
@@ -40,16 +40,26 @@ public class InMemoryBookRepository implements BookRepository {
 
     @Override
     public int delete(int id) {
-        return 0;
+        boolean removed = dataRepository.findAllBooks()
+                .removeIf(b -> b.getId() == id);
+
+        return removed ? 1 : 0;
     }
 
     @Override
     public int updateBook(Book book) {
-        return 0;
+        boolean removed = dataRepository.findAllBooks()
+                .removeIf(b -> b.getId() == book.getId());
+
+        save(book);
+        return removed ? 1 : 0;
     }
 
     @Override
     public int deleteBookById(int id){
-        return 0;
+        boolean removed = dataRepository.findAllBooks()
+                .removeIf(b -> b.getId() == id);
+
+        return removed ? 1 : 0;
     }
 }

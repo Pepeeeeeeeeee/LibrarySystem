@@ -58,16 +58,15 @@ public class BookJdbcRepository implements BookRepository {
                 .query(rs -> rs.next() ? new BookRowMapper().mapRow(rs, rs.getRow()) : null);
     }
 
-    public int save(Book book) {
+    public Book save(Book book) {
         String sql = """
                 INSERT INTO book
-                (id, isbn, title, author, publication_date, pages, price, genre, is_available, cover_image_url, location)
+                (isbn, title, author, publication_date, pages, price, genre, is_available, cover_image_url, location)
                 VALUES 
-                (:id, :isbn, :title, :author, :publication_date, :pages, :price, :genre, :is_available, :cover_image_url, :location)
+                (:isbn, :title, :author, :publication_date, :pages, :price, :genre, :is_available, :cover_image_url, :location)
                 """;
 
         return jdbcClient.sql(sql)
-                .param("id", book.getId())
                 .param("isbn", book.getIsbn())
                 .param("title", book.getTitle())
                 .param("author", book.getAuthor())
@@ -78,7 +77,7 @@ public class BookJdbcRepository implements BookRepository {
                 .param("is_available", book.isAvailable())
                 .param("cover_image_url", book.getCoverImageUrl())
                 .param("location", book.getLocation())
-                .update();
+                .update() != 0 ? book : null;
     }
 
     public int updateAvailability(int id, boolean available) {

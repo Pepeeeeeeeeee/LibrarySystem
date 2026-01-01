@@ -46,4 +46,13 @@ public class BookViewModel {
     @NotBlank(message = "{validation.book.location.notBlank}")
     private String location;
 
+    private boolean comic;
+
+    private String artist;
+
+    @AssertTrue(message = "{validation.comic.artist}")
+    public boolean isArtistValid() {
+        return !comic || (artist != null && !artist.isBlank() && artist.length() >= 2);
+    }
+
 }
