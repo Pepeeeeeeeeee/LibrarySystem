@@ -5,7 +5,7 @@ import be.kdg.librarysystem.domain.BookCheckout;
 import be.kdg.librarysystem.domain.User;
 import be.kdg.librarysystem.domain.enums.*;
 import be.kdg.librarysystem.dto.BookDTO;
-import be.kdg.librarysystem.exception.BookProcessingException;
+//import be.kdg.librarysystem.exception.BookProcessingException;
 import be.kdg.librarysystem.mapper.BookMapper;
 import be.kdg.librarysystem.service.*;
 import be.kdg.librarysystem.viewModel.BookViewModel;

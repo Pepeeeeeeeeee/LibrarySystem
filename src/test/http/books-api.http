@@ -1,0 +1,109 @@
+### Fetching one book – OK (200)
+GET http://localhost:8080/api/books/1
+Accept: application/json
+
+### Fetching one book – Not Found (404)
+GET http://localhost:8080/api/books/99999
+Accept: application/json
+
+### Deleting one book – No Content (204)
+DELETE http://localhost:8080/api/books/1
+Accept: application/json
+
+### Deleting one book – Not Found (404)
+DELETE http://localhost:8080/api/books/99999
+Accept: application/json
+
+### Filtering Books – OK (200)
+GET http://localhost:8080/api/books/filter?fields=title&fields=author&query=Homer
+Accept: application/json
+
+### Filtering Books – Bad Request (400)
+GET http://localhost:8080/api/books/filter?fields=title&query=
+Accept: application/json
+
+### Creating a Book – Created (201)
+POST http://localhost:8080/api/books
+Accept: application/json
+Content-Type: application/json
+
+{
+  "isbn": "978-1234567890",
+  "title": "Clean Architecture",
+  "author": "Robert C. Martin",
+  "publicationDate": "2017-09-20",
+  "pages": 432,
+  "price": 29.99,
+  "genre": "NON_FICTION",
+  "available": true,
+  "coverImageUrl": "https://example.com/cover.jpg",
+  "location": "B2",
+  "comic": false
+}
+
+### Creating a Book – Validation Error (400)
+POST http://localhost:8080/api/books
+Accept: application/json
+Content-Type: application/json
+
+{
+  "isbn": "",
+  "title": "",
+  "author": "",
+  "publicationDate": "2030-01-01",
+  "pages": -10,
+  "price": -5,
+  "genre": null,
+  "coverImageUrl": "invalid-url",
+  "location": ""
+}
+
+### Updating a Book – OK (200)
+PUT http://localhost:8080/api/books/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "isbn": "978-0312866693",
+  "title": "The Odyssey - Updated",
+  "author": "Homer",
+  "publicationDate": "1996-11-01",
+  "pages": 600,
+  "price": 14.99,
+  "genre": "FICTION",
+  "available": true,
+  "coverImageUrl": "https://example.com/odyssey.jpg",
+  "location": "A3",
+  "comic": false
+}
+
+### Updating a Book – Not Found (404)
+PUT http://localhost:8080/api/books/9999
+Accept: application/json
+Content-Type: application/json
+
+{
+  "isbn": "978-1111111111",
+  "title": "Ghost Book",
+  "author": "Nobody",
+  "publicationDate": "2000-01-01",
+  "pages": 100,
+  "price": 10,
+  "genre": "FICTION",
+  "available": true,
+  "coverImageUrl": "https://example.com/test.jpg",
+  "location": "Z9",
+  "comic": false
+}
+
+### Checkout Details – OK (200)
+GET http://localhost:8080/api/books/1/checkout
+Accept: application/json
+
+### Checkout Details – No Content (204)
+GET http://localhost:8080/api/books/6/checkout
+Accept: application/json
+
+### Checkout Details – Not Found (404)
+GET http://localhost:8080/api/books/9999/checkout
+Accept: application/json

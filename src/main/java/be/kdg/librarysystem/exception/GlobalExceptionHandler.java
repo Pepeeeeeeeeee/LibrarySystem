@@ -17,10 +17,10 @@ public class GlobalExceptionHandler {
         return "errorDb";
     }
 
-    @ExceptionHandler(Exception.class)
-    public String handleOtherExceptions(Exception ex, Model model) {
-        log.error("Unexpected error: {}", ex.getMessage(), ex);
-        model.addAttribute("errorMessage", "An unexpected error occurred. Please contact support.");
-        return "error";
-    }
+//    @ExceptionHandler(Exception.class)
+//    public String handleOtherExceptions(Exception ex, Model model) {
+//        log.error("Unexpected error: {}", ex.getMessage(), ex);
+//        model.addAttribute("errorMessage", "An unexpected error occurred. Please contact support.");
+//        return "error";
+//    }
 }

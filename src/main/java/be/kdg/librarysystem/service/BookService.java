@@ -2,7 +2,7 @@ package be.kdg.librarysystem.service;
 
 import be.kdg.librarysystem.domain.Book;
 import be.kdg.librarysystem.domain.BookCheckout;
-import be.kdg.librarysystem.exception.BookProcessingException;
+//import be.kdg.librarysystem.exception.BookProcessingException;
 import be.kdg.librarysystem.repository.interfaces.BookRepository;
 import be.kdg.librarysystem.repository.interfaces.CheckoutRepository;
 import org.springframework.stereotype.Service;
