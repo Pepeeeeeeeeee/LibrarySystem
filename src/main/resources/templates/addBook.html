@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{books.add.title}">Add Book</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/header :: navbar(${currentUser}, ${userPhotoUrl})}"></div>
+
+<div class="container mt-5 mb-5">
+    <h2 class="mb-4 text-center" th:text="#{books.add.title}"></h2>
+
+    <div class="border border-light-subtle rounded-3 bg-white p-4 shadow-sm position-relative">
+
+        <div class="position-absolute top-0 end-0 mt-3 me-3">
+            <a th:href="@{/books}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> <span th:text="#{books.button.back}"></span>
+            </a>
+        </div>
+
+        <form th:action="@{/books/add}" th:object="${book}" method="post" class="mt-4">
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label for="isbn" class="form-label" th:text="#{books.field.isbn}"></label>
+                    <input type="text" id="isbn" th:field="*{isbn}" class="form-control" placeholder="978-...">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('isbn')}" th:errors="*{isbn}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="title" class="form-label" th:text="#{books.field.title}"></label>
+                    <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="author" class="form-label" th:text="#{books.field.author}"></label>
+                    <input type="text" id="author" th:field="*{author}" class="form-control" placeholder="">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="publicationDate" class="form-label" th:text="#{books.field.publicationDate}"></label>
+                    <input type="date" id="publicationDate" th:field="*{publicationDate}" class="form-control">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('publicationDate')}" th:errors="*{publicationDate}"></div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="pages" class="form-label" th:text="#{books.field.pages}"></label>
+                    <input type="number" id="pages" th:field="*{pages}" class="form-control" min="1">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('pages')}" th:errors="*{pages}"></div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="price" class="form-label" th:text="#{books.field.price}"></label>
+                    <input type="number" id="price" th:field="*{price}" step="0.01" min="0" class="form-control">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="genre" class="form-label" th:text="#{books.label.selectGenre}"></label>
+                    <select id="genre" th:field="*{genre}" class="form-select">
+                        <option value="" disabled th:text="#{books.field.genre}"></option>
+                        <option th:each="g : ${T(be.kdg.programming3.domain.enums.Genre).values()}"
+                                th:value="${g}" th:text="${g}"></option>
+                    </select>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label d-block" th:text="#{books.field.available}"></label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" th:field="*{available}">
+                        <label class="form-check-label" for="available" th:text="#{books.label.available}"></label>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="coverImageUrl" class="form-label" th:text="#{books.field.coverImageUrl}"></label>
+                    <input type="url" id="coverImageUrl" th:field="*{coverImageUrl}" class="form-control">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('coverImageUrl')}" th:errors="*{coverImageUrl}"></div>
+                </div>
+
+                <div class="col-12">
+                    <label for="location" class="form-label" th:text="#{books.label.location}"></label>
+                    <input type="text" id="location" th:field="*{location}" class="form-control">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label d-block" th:text="#{books.field.comic}">Comic?</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" th:field="*{comic}" id="comicToggle">
+                        <label class="form-check-label" for="comicToggle" th:text="#{books.label.comic}">Comic</label>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="artist" class="form-label" th:text="#{books.field.artist}">Artist</label>
+                    <input type="text" id="artist" th:field="*{artist}" class="form-control" placeholder="Artist name">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('artist')}" th:errors="*{artist}"></div>
+                </div>
+
+
+
+            </div>
+
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check-circle"></i> <span th:text="#{books.button.save}"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const comicToggle = document.getElementById('comicToggle');
+        const artistField = document.getElementById('artist')?.closest('.col-md-6');
+
+        if (comicToggle && artistField) {
+            const toggleArtist = () => artistField.style.display = comicToggle.checked ? 'block' : 'none';
+            comicToggle.addEventListener('change', toggleArtist);
+            toggleArtist(); // initial state
+        }
+    });
+</script>
+</body>
+</html>

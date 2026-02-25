@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'#{librarians.detail.title} - ' + ${librarian.firstName} + ' ' + ${librarian.lastName}">
+        Librarian Details
+    </title>
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: navbar(${currentUser}, ${userPhotoUrl})}"></div>
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="row g-0">
+            <div class="col-md-4 d-flex align-items-center justify-content-center bg-light">
+                <img th:src="${librarian.employeePhotoUrl}"
+                     class="img-fluid p-3 rounded"
+                     th:alt="${librarian.firstName + ' ' + librarian.lastName}">
+            </div>
+
+            <div class="col-md-8">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h2 class="card-title">
+                            <span th:text="${librarian.firstName}"></span>
+                            <span th:text="${librarian.lastName}"></span>
+                        </h2>
+
+                        <span class="badge fs-6"
+                              th:classappend="${librarian.fullTime} ? 'bg-success' : 'bg-secondary'"
+                              th:text="${librarian.fullTime} ? #{librarians.label.fullTime} : #{librarians.label.partTime}">
+                        </span>
+                    </div>
+
+                    <p class="text-muted mt-2">
+                        <strong th:text="#{librarians.field.department} + ':'"></strong>
+                        <span th:text="${librarian.department}"></span><br>
+
+                        <strong th:text="#{librarians.field.hireDate} + ':'"></strong>
+                        <span th:text="${librarian.hireDate}"></span><br>
+
+                        <strong th:text="#{librarians.field.email} + ':'"></strong>
+                        <span th:text="${librarian.email}"></span><br>
+
+                        <strong th:text="#{librarians.field.phone} + ':'"></strong>
+                        <span th:text="${librarian.phoneNumber}"></span>
+                    </p>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a th:href="@{/librarians}" class="btn btn-outline-primary mt-4">
+                            <i class="bi bi-arrow-left"></i>
+                            <span th:text="#{librarians.button.back}"></span>
+                        </a>
+
+                        <div class="d-flex gap-2" th:if="${currentUser != null and currentUser.flags.name() == 'ADMIN'}">
+                            <a th:href="@{'/librarians/edit/' + ${librarian.id}}" class="btn btn-warning mt-4">
+                                <i class="bi bi-pencil-square"></i> <span th:text="#{librarians.button.edit}"></span>
+                            </a>
+
+                            <button type="button" class="btn btn-danger mt-4" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="bi bi-trash"></i> <span th:text="#{librarians.button.delete}"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel" th:text="#{librarians.modal.deleteTitle}">Delete Librarian</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" th:text="#{librarians.modal.deleteConfirm}">
+                                    Are you sure you want to delete this librarian?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{librarians.button.cancel}">Cancel</button>
+                                    <a th:href="@{|/librarians/delete/${librarian.id}|}" class="btn btn-danger" th:text="#{librarians.button.delete}">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/checkoutList :: checkoutList(
+        'Books processed by this librarian',
+        ${checkouts}
+)}"></div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

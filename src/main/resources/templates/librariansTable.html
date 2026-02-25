@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{librarians.title}">Librarians</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="container mt-4">
+    <h2 th:text="#{librarians.table.heading}">All Librarians Attributes</h2>
+
+    <div class="border border-light-subtle rounded-3 bg-white p-4 shadow-sm">
+        <div th:replace="~{fragments/filter-bar :: filterBar(
+            ${librarianFields}, ${selectedFields}, ${query}, @{/librarians/filter}, true, @{/librarians/add}
+        )}"></div>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered table-sm">
+                <thead>
+                <tr>
+                    <th th:text="#{librarians.field.id}"></th>
+                    <th th:text="#{librarians.field.firstName}"></th>
+                    <th th:text="#{librarians.field.lastName}"></th>
+                    <th th:text="#{librarians.field.hireDate}"></th>
+                    <th th:text="#{librarians.field.salary}"></th>
+                    <th th:text="#{librarians.field.department}"></th>
+                    <th th:text="#{librarians.field.fullTime}"></th>
+                    <th th:text="#{librarians.field.email}"></th>
+                    <th th:text="#{librarians.field.phoneNumber}"></th>
+                    <th th:text="#{librarians.field.employeePhotoUrl}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="librarian : ${librarians}">
+                    <td th:text="${librarian.id}"></td>
+                    <td th:text="${librarian.firstName}"></td>
+                    <td th:text="${librarian.lastName}"></td>
+                    <td th:text="${librarian.hireDate}"></td>
+                    <td th:text="${librarian.salary}"></td>
+                    <td th:text="${librarian.department}"></td>
+                    <td th:text="${librarian.fullTime}"></td>
+                    <td th:text="${librarian.email}"></td>
+                    <td th:text="${librarian.phoneNumber}"></td>
+                    <td th:text="${librarian.employeePhotoUrl}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

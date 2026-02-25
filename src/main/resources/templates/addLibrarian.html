@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{librarians.add.title}">Add Librarian</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+</head>
+<body class="bg-light text-dark">
+
+<div th:replace="~{fragments/header :: navbar(${currentUser}, ${userPhotoUrl})}"></div>
+
+<div class="d-flex justify-content-center align-items-center py-5">
+    <div class="card bg-light text-dark shadow" style="max-width: 600px; width: 100%;">
+        <div class="card-body">
+            <h2 class="card-title text-center text-primary mb-4" th:text="#{librarians.add.title}"></h2>
+
+            <form th:action="@{/librarians/add}" th:object="${librarian}" method="post">
+
+                <div class="mb-3">
+                    <label for="firstName" class="form-label" th:text="#{librarians.field.firstName}"></label>
+                    <input type="text" id="firstName" th:field="*{firstName}" class="form-control" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="lastName" class="form-label" th:text="#{librarians.field.lastName}"></label>
+                    <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="hireDate" class="form-label" th:text="#{librarians.field.hireDate}"></label>
+                    <input type="date" id="hireDate" th:field="*{hireDate}" class="form-control" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('hireDate')}" th:errors="*{hireDate}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="salary" class="form-label" th:text="#{librarians.field.salary}"></label>
+                    <input type="number" id="salary" th:field="*{salary}" step="0.01" class="form-control" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="department" class="form-label" th:text="#{librarians.field.department}"></label>
+                    <select id="department" th:field="*{department}" class="form-select">
+                        <option value="" th:text="#{librarians.field.department}"></option>
+                        <option th:each="dept : ${T(be.kdg.programming3.domain.enums.Department).values()}"
+                                th:value="${dept}" th:text="${dept}"></option>
+                    </select>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('department')}" th:errors="*{department}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="fullTime" class="form-label" th:text="#{librarians.field.employmentType}"></label>
+                    <select id="fullTime" th:field="*{fullTime}" class="form-select">
+                        <option th:value="true" th:text="#{librarians.field.fullTime}"></option>
+                        <option th:value="false" th:text="#{librarians.field.partTime}"></option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="employeePhotoUrl" class="form-label" th:text="#{librarians.field.employeePhotoUrl}"></label>
+                    <input type="text" id="employeePhotoUrl" th:field="*{employeePhotoUrl}" class="form-control" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('employeePhotoUrl')}" th:errors="*{employeePhotoUrl}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label" th:text="#{librarians.field.email}"></label>
+                    <input type="email" id="email" th:field="*{email}" class="form-control" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phoneNumber" class="form-label" th:text="#{librarians.field.phoneNumber}"></label>
+                    <input type="text" id="phoneNumber" th:field="*{phoneNumber}" class="form-control" required>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg" th:text="#{librarians.button.add}"></button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

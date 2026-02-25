@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Fragment: list of book checkouts -->
+<div th:fragment="checkoutList(title, checkouts)" class="pb-5">
+
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 th:text="${title}" class="mb-0"></h5>
+        </div>
+
+        <div class="card-body p-0">
+
+            <table class="table table-striped mb-0" th:if="${checkouts != null and !checkouts.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Book</th>
+                    <th>Checked Out</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Member</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="checkoutOpt : ${checkouts}"
+                    th:if="${checkoutOpt.isPresent()}"
+                    th:with="checkout=${checkoutOpt.get()}">
+
+                    <td>
+                        <a th:href="@{'/books/' + ${checkout.book.id}}">
+                            <span th:text="${checkout.book.title}"></span>
+                        </a>
+                    </td>
+
+                    <td th:text="${checkout.checkoutDate}"></td>
+
+                    <td th:text="${checkout.dueDate}"></td>
+
+                    <td>
+                        <span class="badge bg-info" th:text="${checkout.status}"></span>
+                    </td>
+
+                    <td>
+                        <a th:href="@{'/profile/' + ${checkout.member.id}}">
+                            <span th:text="${checkout.member.firstName + ' ' + checkout.member.lastName}"></span>
+                        </a>
+                    </td>
+
+                    <td>
+                        <a class="btn btn-sm btn-outline-secondary"
+                           th:href="@{'/checkouts/filter?fields=id&query=' + ${checkout.id}}">
+                            Details
+                        </a>
+                    </td>
+
+                </tr>
+                </tbody>
+
+            </table>
+
+            <!-- Empty list -->
+            <div class="p-3 text-muted" th:if="${checkouts == null or checkouts.isEmpty()}">
+                <i>No checkouts found.</i>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

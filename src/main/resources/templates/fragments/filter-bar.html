@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="filterBar(domainFields, selectedFields, query, actionUrl, showAddButton, addUrl)">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form th:action="${actionUrl}" method="get" class="d-flex align-items-center gap-2 w-99">
+
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                        id="fieldDropdownButton"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        th:text="#{nav.filter}">
+                </button>
+
+                <ul class="dropdown-menu p-3" aria-labelledby="fieldDropdownButton"
+                    style="max-height: 300px; overflow-y: auto; min-width: 250px;"
+                    id="fieldDropdownMenu">
+
+                    <li class="d-flex justify-content-between mb-2 border-bottom pb-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="selectAllBtn"
+                                th:text="#{nav.selectAll}"></button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" id="clearAllBtn"
+                                th:text="#{nav.clearAll}"></button>
+                    </li>
+
+                    <li th:each="f : ${domainFields}" class="mb-1">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="fields"
+                                   th:id="'field-' + ${f}"
+                                   th:value="${f}"
+                                   th:checked="${selectedFields != null and selectedFields.contains(f)}">
+                            <label class="form-check-label" th:for="'field-' + ${f}" th:text="${f}"></label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <input type="text"
+                   name="query"
+                   th:value="${query}"
+                   class="form-control w-75"
+                   placeholder=""
+                   th:placeholder="#{nav.search}">
+
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+
+        <a th:if="${showAddButton}"
+           th:href="${addUrl}"
+           class="btn btn-primary btn-sm ms-3"
+           th:text="#{nav.add}">
+            <i class="bi bi-plus-lg"></i>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const dropdownMenu = document.getElementById("fieldDropdownMenu");
+            const selectAllBtn = document.getElementById("selectAllBtn");
+            const clearAllBtn = document.getElementById("clearAllBtn");
+
+            dropdownMenu.addEventListener("click", e => e.stopPropagation());
+            selectAllBtn.addEventListener("click", () => {
+                dropdownMenu.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = true);
+            });
+            clearAllBtn.addEventListener("click", () => {
+                dropdownMenu.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
