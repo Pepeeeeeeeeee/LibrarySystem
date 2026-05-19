@@ -1,0 +1,41 @@
+### Register a new member - Created (200 OK, but often 201 Created for resource creation)
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "membershipType": "PREMIUM",
+  "email": "john.doe@example.com",
+  "phoneNumber": "123-456-7890",
+  "username": "johndoe_new",
+  "password": "password"
+}
+
+### Register a new member - Username already exists (400 Bad Request)
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "membershipType": "BASIC",
+  "email": "jane.doe@example.com",
+  "phoneNumber": "098-765-4321",
+  "username": "johndoe_new",
+  "password": "anotherpassword"
+}
+
+### Register a new member - Validation Error (400 Bad Request)
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "",
+  "lastName": "Doe",
+  "membershipType": "PREMIUM",
+  "email": "invalid-email",
+  "phoneNumber": "123",
+  "username": "short",
+  "password": ""
+}

@@ -1,8 +1,7 @@
-package be.kdg.librarysystem.controller.restController;
+package be.kdg.librarysystem.controller.api;
 
 import be.kdg.librarysystem.domain.Book;
-import be.kdg.librarysystem.domain.BookCheckout;
-import be.kdg.librarysystem.domain.enums.CheckoutStatus;
+import be.kdg.librarysystem.dto.BookCheckoutDetailsDTO;
 import be.kdg.librarysystem.dto.BookDTO;
 import be.kdg.librarysystem.mapper.BookMapper;
 import be.kdg.librarysystem.service.BookService;
@@ -12,19 +11,18 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 @RestController
 @RequestMapping("/api/books")
-public class BooksRestController {
+public class BooksApiController {
 
     private final BookService bookService;
     private final FilteringService filteringService;
 
-    public BooksRestController(BookService bookService, FilteringService filteringService) {
+    public BooksApiController(BookService bookService, FilteringService filteringService) {
         this.bookService = bookService;
         this.filteringService = filteringService;
     }
@@ -109,32 +107,20 @@ public class BooksRestController {
     }
 
     @GetMapping("/{id}/checkout")
-    public ResponseEntity<Object> getCheckoutDetails(@PathVariable int id) {
+    public ResponseEntity<BookCheckoutDetailsDTO> getCheckoutDetails(
+            @PathVariable int id) {
 
         Book book = bookService.findById(id);
+
         if (book == null) {
             return ResponseEntity.notFound().build();
         }
 
-        Optional<BookCheckout> checkoutOpt = bookService.getCheckoutDetailsObj(id);
+        Optional<BookCheckoutDetailsDTO> checkoutOpt =
+                bookService.getCheckoutDetails(id);
 
-        if (checkoutOpt.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        BookCheckout checkout = checkoutOpt.get();
-
-        boolean isCheckedOut = checkout.getStatus() != CheckoutStatus.RETURNED;
-
-        LocalDate returnDate = checkout.getReturnDate();
-
-        return ResponseEntity.ok(new Object() {
-            public final boolean checkedOut = isCheckedOut;
-            public final String expectedReturnDate = returnDate != null ? returnDate.toString() : null;
-            public final int librarianId = checkout.getHandledByLibrarian().getId();
-            public final String librarianName = checkout.getHandledByLibrarian().getFirstName() + " " + checkout.getHandledByLibrarian().getLastName();
-            public final int memberId = checkout.getMember().getId();
-            public final String memberName = checkout.getMember().getFirstName() + " " + checkout.getMember().getLastName();
-        });
+        return checkoutOpt
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 }

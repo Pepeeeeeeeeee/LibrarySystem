@@ -365,3 +365,29 @@ Response:
 ```
 HTTP/1.1 404 Not Found
 ```
+---
+
+## Spring Profiles and Test Database Configuration
+
+This project utilizes Spring Profiles to manage different configurations for development, production, and testing environments. Specifically, a `test` profile has been introduced to ensure that integration and service layer tests run against a dedicated test database without interfering with the main application's data.
+
+### `application-test.properties`
+
+A new configuration file, `src/main/resources/application-test.properties`, has been created to override default settings when the `test` profile is active. Key configurations in this file include:
+
+-   `spring.sql.init.mode=never`: This setting prevents the automatic execution of `data.sql` (or `schema.sql`) when the `test` profile is active. This is crucial for tests, as it allows test data to be managed programmatically within the test classes (e.g., using `@BeforeEach` or `@DataJpaTest`'s transactional capabilities) rather than relying on a fixed initial dataset.
+-   `spring.jpa.hibernate.ddl-auto=none`: This prevents Hibernate from automatically creating or updating the database schema during tests. For integration tests, it's often preferred to have a stable schema, possibly managed by Flyway or Liquibase, or to let `@DataJpaTest` handle schema creation for in-memory databases.
+-   `spring.datasource.url=jdbc:postgresql://localhost:5432/pro5_db_test`: This points the test profile to a separate PostgreSQL database named `pro5_db_test`. This ensures complete isolation from the development database (`pro5_db`).
+
+### Test Execution
+
+To ensure tests run with the `test` profile activated, you can use the following command-line arguments:
+
+#### Using Gradle:
+```bash
+./gradlew test -Dspring.profiles.active=test
+```
+
+When using `@SpringBootTest` or `@DataJpaTest` annotations in your test classes, you can directly specify the active profile using `@ActiveProfiles("test")`. This automatically applies the `application-test.properties` configuration for those specific tests.
+
+By following this setup, tests are isolated, repeatable, and do not corrupt or depend on the state of the development database.

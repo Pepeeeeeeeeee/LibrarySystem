@@ -1,97 +1,264 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
+
     <meta charset="UTF-8">
-    <title th:text="#{librarians.edit.title}">Edit Librarian</title>
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <title th:text="#{librarians.edit.title}">
+        Edit Librarian
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 </head>
+
 <body class="bg-light">
 
-<div th:replace="~{fragments/header :: navbar(${currentUser}, ${userPhotoUrl})}"></div>
+<div th:replace="~{fragments/header :: navbar}"></div>
 
 <div class="container mt-5 mb-5">
-    <h2 class="mb-4 text-center" th:text="#{librarians.edit.title}">Edit Librarian</h2>
+
+    <h2 class="mb-4 text-center"
+        th:text="#{librarians.edit.title}">
+    </h2>
 
     <div class="border border-light-subtle rounded-3 bg-white p-4 shadow-sm position-relative">
 
         <div class="position-absolute top-0 end-0 mt-3 me-3">
-            <a th:href="@{/librarians}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> <span th:text="#{librarians.button.back}"></span>
+
+            <a th:href="@{/librarians}"
+               class="btn btn-outline-secondary btn-sm">
+
+                <i class="bi bi-arrow-left"></i>
+
+                <span th:text="#{librarians.button.back}">
+                    Back
+                </span>
+
             </a>
+
         </div>
 
-        <form th:action="@{|/librarians/edit/${librarian.id}|}" th:object="${librarian}" method="post" class="mt-4">
+        <form id="editLibrarianForm" class="mt-4">
+
+            <input type="hidden"
+                   id="librarianId"
+                   th:value="${librarian.id}">
+
             <div class="row g-3">
 
                 <div class="col-md-6">
-                    <label for="firstName" class="form-label" th:text="#{librarians.field.firstName}"></label>
-                    <input type="text" id="firstName" th:field="*{firstName}" class="form-control">
-                    <div class="text-danger small" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+
+                    <label class="form-label">
+                        First Name
+                    </label>
+
+                    <input type="text"
+                           id="firstName"
+                           class="form-control"
+                           th:value="${librarian.firstName}">
+
                 </div>
 
                 <div class="col-md-6">
-                    <label for="lastName" class="form-label" th:text="#{librarians.field.lastName}"></label>
-                    <input type="text" id="lastName" th:field="*{lastName}" class="form-control">
-                    <div class="text-danger small" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+
+                    <label class="form-label">
+                        Last Name
+                    </label>
+
+                    <input type="text"
+                           id="lastName"
+                           class="form-control"
+                           th:value="${librarian.lastName}">
+
                 </div>
 
                 <div class="col-md-6">
-                    <label for="department" class="form-label" th:text="#{librarians.field.department}"></label>
-                    <input type="text" id="department" th:field="*{department}" class="form-control">
-                    <div class="text-danger small" th:if="${#fields.hasErrors('department')}" th:errors="*{department}"></div>
+
+                    <label class="form-label">
+                        Department
+                    </label>
+
+                    <select id="department"
+                            class="form-select">
+
+                        <option value="GENERAL"
+                                th:selected="${librarian.department.name() == 'GENERAL'}">
+                            GENERAL
+                        </option>
+
+                        <option value="RESEARCH"
+                                th:selected="${librarian.department.name() == 'RESEARCH'}">
+                            RESEARCH
+                        </option>
+
+                        <option value="CHILDRENS_SECTION"
+                                th:selected="${librarian.department.name() == 'CHILDRENS_SECTION'}">
+                            CHILDRENS_SECTION
+                        </option>
+
+                        <option value="ARCHIVE"
+                                th:selected="${librarian.department.name() == 'ARCHIVE'}">
+                            ARCHIVE
+                        </option>
+
+                    </select>
+
                 </div>
 
                 <div class="col-md-6">
-                    <label for="hireDate" class="form-label" th:text="#{librarians.field.hireDate}"></label>
-                    <input type="date" id="hireDate" th:field="*{hireDate}" class="form-control">
-                    <div class="text-danger small" th:if="${#fields.hasErrors('hireDate')}" th:errors="*{hireDate}"></div>
+
+                    <label class="form-label">
+                        Hire Date
+                    </label>
+
+                    <input type="date"
+                           id="hireDate"
+                           class="form-control"
+                           th:value="${librarian.hireDate}">
+
                 </div>
 
                 <div class="col-md-6">
-                    <label for="email" class="form-label" th:text="#{librarians.field.email}"></label>
-                    <input type="email" id="email" th:field="*{email}" class="form-control">
-                    <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+                    <label class="form-label">
+                        Email
+                    </label>
+
+                    <input type="email"
+                           id="email"
+                           class="form-control"
+                           th:value="${librarian.email}">
+
                 </div>
 
                 <div class="col-md-6">
-                    <label for="phoneNumber" class="form-label" th:text="#{librarians.field.phone}"></label>
-                    <input type="text" id="phoneNumber" th:field="*{phoneNumber}" class="form-control">
-                    <div class="text-danger small" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+
+                    <label class="form-label">
+                        Phone Number
+                    </label>
+
+                    <input type="text"
+                           id="phoneNumber"
+                           class="form-control"
+                           th:value="${librarian.phoneNumber}">
+
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label d-block" th:text="#{librarians.field.fullTime}"></label>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" th:field="*{fullTime}">
-                        <label class="form-check-label" for="fullTime" th:text="#{librarians.label.fullTime}"></label>
+
+                    <div class="form-check form-switch mt-4">
+
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="fullTime"
+                               th:checked="${librarian.fullTime}">
+
+                        <label class="form-check-label">
+                            Full Time
+                        </label>
+
                     </div>
+
                 </div>
 
                 <div class="col-md-6">
-                    <label for="salary" class="form-label" th:text="#{librarians.field.salary}"></label>
-                    <input type="number" id="salary" th:field="*{salary}" step="0.01" min="0" class="form-control">
-                    <div class="text-danger small" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></div>
+
+                    <label class="form-label">
+                        Salary
+                    </label>
+
+                    <input type="number"
+                           step="0.01"
+                           id="salary"
+                           class="form-control"
+                           th:value="${librarian.salary}">
+
                 </div>
 
-                <div class="col-md-6">
-                    <label for="employeePhotoUrl" class="form-label" th:text="#{librarians.field.photo}"></label>
-                    <input type="url" id="employeePhotoUrl" th:field="*{employeePhotoUrl}" class="form-control">
-                    <div class="text-danger small" th:if="${#fields.hasErrors('employeePhotoUrl')}" th:errors="*{employeePhotoUrl}"></div>
+                <div class="col-md-12">
+
+                    <label class="form-label">
+                        Employee Photo URL
+                    </label>
+
+                    <input type="url"
+                           id="employeePhotoUrl"
+                           class="form-control"
+                           th:value="${librarian.employeePhotoUrl}">
+
                 </div>
 
             </div>
 
             <div class="mt-4 text-center">
-                <button type="submit" class="btn btn-primary px-4">
-                    <i class="bi bi-check-circle"></i> <span th:text="#{librarians.button.save}"></span>
+
+                <button type="submit"
+                        class="btn btn-primary px-4">
+
+                    <i class="bi bi-check-circle"></i>
+
+                    <span th:text="#{librarians.button.save}">
+                        Save
+                    </span>
+
                 </button>
+
             </div>
+
         </form>
+
     </div>
+
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+
+    document.getElementById('editLibrarianForm')
+        .addEventListener('submit', async (e) => {
+
+            e.preventDefault();
+
+            const id = document.getElementById('librarianId').value;
+
+            const body = {
+                id: id,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                hireDate: document.getElementById('hireDate').value,
+                salary: parseFloat(document.getElementById('salary').value),
+                department: document.getElementById('department').value,
+                fullTime: document.getElementById('fullTime').checked,
+                employeePhotoUrl: document.getElementById('employeePhotoUrl').value,
+                email: document.getElementById('email').value,
+                phoneNumber: document.getElementById('phoneNumber').value
+            };
+
+            const response = await fetch(`/api/librarians/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                window.location.href = `/librarians/${id}`;
+            } else {
+                alert('Failed to update librarian');
+            }
+        });
+
+</script>
+
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>

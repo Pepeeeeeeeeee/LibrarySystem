@@ -1,50 +1,137 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html
+        lang="en"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Register</title>
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
 </head>
+
 <body class="bg-light">
 
-<div th:replace="~{fragments/header :: navbar(null, null)}"></div>
+<div th:replace="~{fragments/header :: navbar}"></div>
 
 <div class="container py-5">
+
     <div class="d-flex justify-content-center align-items-center">
-        <div class="card shadow-sm p-4" style="max-width: 500px; width: 100%;">
-            <h3 class="text-center text-primary mb-4">Register</h3>
-            <form th:action="@{/register}" method="post">
+
+        <div class="card shadow-sm p-4"
+             style="max-width: 500px; width: 100%;">
+
+            <h3 class="text-center text-primary mb-4">
+                Register
+            </h3>
+
+            <div th:if="${param.error}"
+                 class="alert alert-danger">
+
+                Registration failed.
+
+            </div>
+
+            <form th:action="@{/register}"
+                  method="post">
+
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input name="username" type="text" class="form-control" id="username" required>
+
+                    <label for="username"
+                           class="form-label">
+
+                        Username
+
+                    </label>
+
+                    <input name="username"
+                           type="text"
+                           class="form-control"
+                           id="username"
+                           required>
+
                 </div>
 
                 <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input name="password" type="password" class="form-control" id="password" required>
+
+                    <label for="password"
+                           class="form-label">
+
+                        Password
+
+                    </label>
+
+                    <input name="password"
+                           type="password"
+                           class="form-control"
+                           id="password"
+                           required>
+
                 </div>
 
                 <div class="mb-3">
-                    <label for="passwordConf" class="form-label">Confirm Password</label>
-                    <input name="passwordConf" type="password" class="form-control" id="passwordConf" required>
+
+                    <label for="passwordConf"
+                           class="form-label">
+
+                        Confirm Password
+
+                    </label>
+
+                    <input name="passwordConf"
+                           type="password"
+                           class="form-control"
+                           id="passwordConf"
+                           required>
+
                 </div>
 
                 <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-success">Register</button>
+
+                    <button type="submit"
+                            class="btn btn-success">
+
+                        Register
+
+                    </button>
+
                 </div>
+
             </form>
 
             <div class="text-center mt-3">
-                <p class="mb-0">Already have an account?
-                    <a th:href="@{/login}" class="text-decoration-none text-success fw-semibold">Login</a>
+
+                <p class="mb-0">
+
+                    Already have an account?
+
+                    <a th:href="@{/login}"
+                       class="text-decoration-none text-success fw-semibold">
+
+                        Login
+
+                    </a>
+
                 </p>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
-<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}">
+</script>
+
 </body>
 </html>

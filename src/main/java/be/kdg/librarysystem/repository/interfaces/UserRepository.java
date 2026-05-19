@@ -2,18 +2,12 @@ package be.kdg.librarysystem.repository.interfaces;
 
 import be.kdg.librarysystem.domain.User;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository {
-    List<User> findAll();
-    User save(User user);
-    String getToken(int id);
-    int updateToken(String token, int id);
-    User getUserById(int id);
-    User getUserByMemberId(int id);
-    User getUserByCredentials(String username, String password);
-    User getUserByToken(String token);
-    User registerUser(int id, String username, String password);
-    boolean checkIfUsernameExists(String username);
-    int updateUsername(int id, String username);
-    int updatePassword(int id, String password);
+    Optional<User> findByUsername(String username);
+
+    boolean existsByUsername(String username);
+
+    Optional<User> findByMemberId(int memberId);
 }

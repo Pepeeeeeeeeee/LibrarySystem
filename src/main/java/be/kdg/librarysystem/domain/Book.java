@@ -22,6 +22,7 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(unique = true)
     private String isbn;
     private String title;
     private String author;
@@ -35,7 +36,11 @@ public class Book {
     private String coverImageUrl;
     private String location;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(
+            mappedBy = "book",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.LAZY
+    )
     private List<BookCheckout> checkouts = new ArrayList<>();
 
 

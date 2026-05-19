@@ -4,6 +4,8 @@ import be.kdg.librarysystem.domain.BookCheckout;
 import be.kdg.librarysystem.repository.interfaces.CheckoutRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
@@ -11,52 +13,27 @@ import java.util.Optional;
 
 @Repository
 public interface BookCheckoutJpaRepository extends JpaRepository<BookCheckout, Integer>, CheckoutRepository {
+    @Override
+    @Query("""
+        SELECT bc
+        FROM BookCheckout bc
+        LEFT JOIN FETCH bc.handledByLibrarian
+        LEFT JOIN FETCH bc.member
+        WHERE bc.book.id = :bookId
+    """)
+    Optional<BookCheckout> findByBookId(@Param("bookId") int bookId);
+
 
     @Override
-    default BookCheckout findById(int id) {
-        return findById((Integer) id).orElse(null);
-    }
+    List<BookCheckout> findByHandledByLibrarianId(int librarianId);
 
-    @Override
-    default BookCheckout save(BookCheckout checkout) {
-        return saveAndFlush(checkout);
-    }
-
-    @Override
-    default int updateReturnDate(int id, LocalDate returnDate) {
-        BookCheckout checkout = findById(id);
-        if (checkout != null) {
-            checkout.setReturnDate(returnDate);
-            saveAndFlush(checkout);
-            return 1;
-        }
-        return 0;
-    }
-
-    @Override
-    default int delete(int id) {
-        deleteById(id);
-        return 1;
-    }
-
-    @Override
-    default Optional<BookCheckout> findByBookId(int bookId) {
-        return findAll().stream().filter(c -> c.getBook().getId() == bookId).findFirst();
-    }
-
-    @Override
-    default List<Optional<BookCheckout>> findByLibrarianId(int librarianId) {
-        return findAll().stream()
-                .filter(c -> c.getHandledByLibrarian() != null && c.getHandledByLibrarian().getId() == librarianId)
-                .map(Optional::of)
-                .toList();
-    }
-
-    @Override
-    default List<Optional<BookCheckout>> findByMemberId(int memberId) {
-        return findAll().stream()
-                .filter(c -> c.getMember() != null && c.getMember().getId() == memberId)
-                .map(Optional::of)
-                .toList();
-    }
+    @Query("""
+    SELECT bc
+    FROM BookCheckout bc
+    JOIN FETCH bc.book
+    WHERE bc.member.id = :memberId
+    """)
+    List<BookCheckout> findByMemberId(
+            @Param("memberId") int memberId
+    );
 }

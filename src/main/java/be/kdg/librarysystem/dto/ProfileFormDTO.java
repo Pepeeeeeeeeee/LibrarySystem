@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProfileFormDTO {
+
+    private int id;
+
     private String firstName;
     private String lastName;
     private String email;
@@ -17,8 +20,13 @@ public class ProfileFormDTO {
     private String username;
     private String profileImageUrl;
 
-    public static ProfileFormDTO toProfileForm(Member member, User user) {
+    public static ProfileFormDTO toProfileForm(
+            Member member,
+            User user
+    ) {
+
         return new ProfileFormDTO(
+                member.getId(),
                 member.getFirstName(),
                 member.getLastName(),
                 member.getEmail(),

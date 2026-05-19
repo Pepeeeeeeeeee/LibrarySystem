@@ -1,64 +1,99 @@
 package be.kdg.librarysystem.service;
 
+import be.kdg.librarysystem.domain.Member;
 import be.kdg.librarysystem.domain.User;
-import be.kdg.librarysystem.repository.interfaces.UserRepository;
+import be.kdg.librarysystem.domain.enums.Roles;
+import be.kdg.librarysystem.repository.UserJpaRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
+@Transactional
 public class UserService {
-    private final UserRepository repo;
 
-    public UserService(UserRepository repo) {
-        this.repo = repo;
+    private final UserJpaRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(
+            UserJpaRepository userRepository,
+            PasswordEncoder passwordEncoder
+    ) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public List<User> getAllUsers() {
-        return repo.findAll();
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElse(null);
     }
 
-    public void addUser(User user) {
-        repo.save(user);
+    public boolean usernameExists(String username) {
+        return userRepository.existsByUsername(username);
     }
 
-    public String getToken(int id){
-        return repo.getToken(id);
+    public User createUser(
+            Member member,
+            String username,
+            String rawPassword
+    ) {
+
+        User user = new User();
+
+        user.setMember(member);
+        user.setUsername(username);
+
+        user.setPassword(
+                passwordEncoder.encode(rawPassword)
+        );
+
+        user.setRole(Roles.USER);
+
+        return userRepository.save(user);
     }
 
-    public int updateToken(int id, String token){
-        return repo.updateToken(token, id);
+    public User findById(int id) {
+        return userRepository.findById(id)
+                .orElse(null);
     }
 
-    public User getUserById(int id){
-        return repo.getUserById(id);
+    public User findByMemberId(int memberId) {
+        return userRepository.findByMemberId(memberId)
+                .orElse(null);
     }
 
-    public User getUserByMemberId(int id){
-        return repo.getUserByMemberId(id);
+    public User updateUsername(int id, String username) {
+
+        User user = findById(id);
+
+        if (user == null) {
+            return null;
+        }
+
+        user.setUsername(username);
+
+        return userRepository.save(user);
     }
 
-    public User authUser(String username, String password){
-        return repo.getUserByCredentials(username, password);
-    }
+    public boolean changePassword(
+            User user,
+            String oldPassword,
+            String newPassword
+    ) {
 
-    public User registerUser(int id, String username, String password){
-        return repo.registerUser(id, username, password);
-    }
+        if (!passwordEncoder.matches(
+                oldPassword,
+                user.getPassword()
+        )) {
+            return false;
+        }
 
-    public boolean checkIfUsernameExists(String username){
-        return repo.checkIfUsernameExists(username);
-    }
+        user.setPassword(
+                passwordEncoder.encode(newPassword)
+        );
 
-    public User getUserByToken(String token){
-        return repo.getUserByToken(token);
-    }
+        userRepository.save(user);
 
-    public int updateUsername(int id, String username){
-        return repo.updateUsername(id, username);
+        return true;
     }
-
-    public void updatePassword(int id, String password){
-        repo.updatePassword(id, password);
-    }
-
 }

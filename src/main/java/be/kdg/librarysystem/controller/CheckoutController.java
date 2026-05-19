@@ -1,14 +1,14 @@
 package be.kdg.librarysystem.controller;
 
 import be.kdg.librarysystem.domain.BookCheckout;
-import be.kdg.librarysystem.domain.User;
 import be.kdg.librarysystem.dto.CheckoutDTO;
 import be.kdg.librarysystem.mapper.CheckoutMapper;
-import be.kdg.librarysystem.service.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import be.kdg.librarysystem.service.CheckoutService;
+import be.kdg.librarysystem.service.FilteringService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,73 +19,63 @@ import java.util.function.Predicate;
 @Controller
 @RequestMapping("/checkouts")
 public class CheckoutController {
-    private final CheckoutService checkoutService;
-    private final FilteringService filteringService;
-    private final UserService userService;
-    private final AuthService authService;
-    private final MemberService memberService;
+
     private static final Logger log = LoggerFactory.getLogger(CheckoutController.class);
 
-    public CheckoutController(CheckoutService checkoutService,
-                              FilteringService filteringService,
-                              UserService userService,
-                              AuthService authService,
-                              MemberService memberService) {
+    private final CheckoutService checkoutService;
+    private final FilteringService filteringService;
+
+    public CheckoutController(CheckoutService checkoutService, FilteringService filteringService) {
         this.checkoutService = checkoutService;
         this.filteringService = filteringService;
-        this.userService = userService;
-        this.authService = authService;
-        this.memberService = memberService;
     }
 
     @GetMapping
-    public String listCheckouts(Model model, HttpServletRequest request, HttpServletResponse response) {
-        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
-        model.addAttribute("checkouts",
-                checkoutService.getAllBookCheckouts().stream()
-                        .map(CheckoutMapper::toDTO)
-                        .toList());
-        log.debug("Listed all checkouts");
-        model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
+    public String listCheckouts(Model model) {
+        model.addAttribute("checkouts", checkoutService.getAllBookCheckouts().stream().map(CheckoutMapper::toDTO).toList());
         model.addAttribute("checkoutFields", filteringService.preloadDomainFields(BookCheckout.class));
         model.addAttribute("selectedFields", null);
         model.addAttribute("query", "");
+
+        log.debug("Listed all checkouts");
 
         return "checkoutsTable";
     }
 
     @GetMapping("/filter")
-    public String filterCheckouts(@RequestParam(defaultValue = "id") List<String> fields, @RequestParam String query, Model model,
-                                  HttpServletRequest request, HttpServletResponse response) {
-        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
+    public String filterCheckouts(
+            @RequestParam(defaultValue = "id") List<String> fields,
+            @RequestParam String query,
+            Model model) {
 
         log.debug("Filtering checkouts with field={} value={}", fields, query);
+
         Predicate<BookCheckout> predicate = filteringService.buildMultiFieldPredicate(BookCheckout.class, fields, query);
         List<BookCheckout> filtered = filteringService.filter(checkoutService.getAllBookCheckouts(), predicate);
-        log.debug(
-                "Filtered {} checkouts: {}",
-                filtered.size(),
-                filtered.stream().map(BookCheckout::getId).toList()
-        );
-        model.addAttribute("checkouts", filtered);
-        model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", user != null ? memberService.findById(user.getId()).getProfileImageUrl() : null);
+
+        log.debug("Filtered {} checkouts", filtered.size());
+
+        model.addAttribute("checkouts", filtered.stream().map(CheckoutMapper::toDTO).toList());
         model.addAttribute("checkoutFields", filteringService.preloadDomainFields(BookCheckout.class));
         model.addAttribute("selectedFields", fields);
         model.addAttribute("query", query);
+
         return "checkoutsTable";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/add")
     public String showAddCheckoutForm(Model model) {
         model.addAttribute("checkout", new CheckoutDTO());
+
         return "addCheckout";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
-    public String addCheckout(@ModelAttribute("checkout") CheckoutDTO checkoutDTO) {
+    public String addCheckout(@Valid @ModelAttribute("checkout") CheckoutDTO checkoutDTO) {
         checkoutService.addCheckout(CheckoutMapper.toEntity(checkoutDTO));
+
         return "redirect:/checkouts";
     }
 }

@@ -13,55 +13,17 @@ import java.util.List;
 
 @Repository
 public interface BookJpaRepository extends JpaRepository<Book, Integer>, BookRepository {
-
     @Override
-    default List<Book> findAllBooks() {
-        return findAll();
-    }
-
-    @Override
-    default Book findById(int id) {
-        return findById((Integer) id).orElse(null);
-    }
-
-    @Override
-    default Book save(Book book) {
-        return saveAndFlush(book);
-    }
-
-    @Override
-    default int updateAvailability(int id, boolean available) {
-        Book book = findById(id);
-        if (book != null) {
-            book.setAvailable(available);
-            saveAndFlush(book);
-            return 1;
-        }
-        return 0;
-    }
-
-    @Override
-    default int updateBook(Book book) {
-        saveAndFlush(book);
-        return 1;
-    }
-
-    @Override
-    default int delete(int id) {
-        deleteById(id);
-        return 1;
-    }
-
-    @Override
-    default int deleteBookById(int id) {
-        deleteById(id);
-        return 1;
-    }
-
     List<Book> findByGenre(Genre genre);
 
+    @Override
     List<Book> findByTitleContainingIgnoreCase(String title);
 
-    @Query("select b from Comic b where b.artist = :artist")
-    List<Comic> findComicsByArtist(@Param("artist") String artist);
+    @Override
+    @Query("""
+            select c
+            from Comic c
+            where lower(c.artist) = lower(:artist)
+            """)
+    List<Comic> findComicsByArtist(String artist);
 }

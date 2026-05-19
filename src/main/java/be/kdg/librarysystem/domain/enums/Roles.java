@@ -1,5 +1,5 @@
 package be.kdg.librarysystem.domain.enums;
 
-public enum Flags {
+public enum Roles {
     ADMIN, USER
 }

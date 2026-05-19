@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +8,7 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
 </head>
 <body class="overflow-hidden">
-<div th:replace="~{fragments/header :: navbar(${userLoggedIn}, ${userPhotoUrl})}"></div>
+<div th:replace="~{fragments/header :: navbar}"></div>
 
 <section class="vh-100 d-flex align-items-center justify-content-center text-center bg-dark text-white"
          style="background: url('/images/bookshelf.jpg') center/cover no-repeat;z-index: 0;">

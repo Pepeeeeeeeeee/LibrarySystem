@@ -1,0 +1,120 @@
+### Get all librarians - OK (200)
+GET http://localhost:8080/api/librarians
+Accept: application/json
+
+### Get librarian by ID - OK (200)
+GET http://localhost:8080/api/librarians/1
+Accept: application/json
+
+### Get librarian by ID - Not Found (404)
+GET http://localhost:8080/api/librarians/99999
+Accept: application/json
+
+### Filter librarians by ID - OK (200)
+GET http://localhost:8080/api/librarians/filter?fields=id&query=1
+Accept: application/json
+
+### Filter librarians - OK (200) - no results
+GET http://localhost:8080/api/librarians/filter?fields=id&query=99999
+Accept: application/json
+
+### Filter librarians - Bad Request (400) - blank query
+GET http://localhost:8080/api/librarians/filter?fields=id&query=
+Accept: application/json
+
+### Add a new librarian - Created (201)
+POST http://localhost:8080/api/librarians
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "hireDate": "2023-01-01",
+  "salary": 50000.00,
+  "department": "Circulation",
+  "fullTime": true,
+  "employeePhotoUrl": "http://example.com/jane.jpg",
+  "email": "jane.doe@example.com",
+  "phoneNumber": "098-765-4321"
+}
+
+### Add a new librarian - Validation Error (400)
+POST http://localhost:8080/api/librarians
+Content-Type: application/json
+
+{
+  "firstName": "",
+  "lastName": "Doe",
+  "hireDate": "invalid-date",
+  "salary": -100.00,
+  "department": "",
+  "fullTime": true,
+  "employeePhotoUrl": "invalid-url",
+  "email": "invalid-email",
+  "phoneNumber": "short"
+}
+
+### Update an existing librarian - OK (200)
+PUT http://localhost:8080/api/librarians/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "hireDate": "2023-01-01",
+  "salary": 55000.00,
+  "department": "Circulation",
+  "fullTime": true,
+  "employeePhotoUrl": "http://example.com/jane.jpg",
+  "email": "jane.smith@example.com",
+  "phoneNumber": "098-765-4321"
+}
+
+### Update an existing librarian - Not Found (404)
+PUT http://localhost:8080/api/librarians/99999
+Content-Type: application/json
+
+{
+  "id": 99999,
+  "firstName": "Ghost",
+  "lastName": "Librarian",
+  "hireDate": "2023-01-01",
+  "salary": 1.00,
+  "department": "None",
+  "fullTime": false,
+  "employeePhotoUrl": "http://example.com/ghost.jpg",
+  "email": "ghost@example.com",
+  "phoneNumber": "000-000-0000"
+}
+
+### Update an existing librarian - Validation Error (400)
+PUT http://localhost:8080/api/librarians/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "",
+  "lastName": "Doe",
+  "hireDate": "invalid-date",
+  "salary": -100.00,
+  "department": "",
+  "fullTime": true,
+  "employeePhotoUrl": "invalid-url",
+  "email": "invalid-email",
+  "phoneNumber": "short"
+}
+
+### Delete a librarian - No Content (204)
+DELETE http://localhost:8080/api/librarians/2
+
+### Delete a librarian - Not Found (404)
+DELETE http://localhost:8080/api/librarians/99999
+
+### Get librarian checkouts by ID - OK (200)
+GET http://localhost:8080/api/librarians/1/checkouts
+Accept: application/json
+
+### Get librarian checkouts by ID - Not Found (404)
+GET http://localhost:8080/api/librarians/99999/checkouts
+Accept: application/json

@@ -1,151 +1,296 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <title th:text="#{register.member.title}">Membership Registration</title>
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <title>
+        Membership Registration
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 </head>
 
 <body class="bg-light">
-<div th:replace="~{fragments/header :: navbar(null, null)}"></div>
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
 <div class="container mt-5">
+
     <div class="row justify-content-center">
+
         <div class="col-md-8">
 
             <div class="card shadow-sm">
+
                 <div class="card-body">
-                    <h3 class="card-title mb-4 text-center"
-                        th:text="#{register.member.heading}">
+
+                    <h3 class="card-title mb-4 text-center">
                         Complete Your Membership
                     </h3>
 
-                    <!-- already have a membership? -->
                     <form id="membershipCheckForm">
+
                         <div class="mb-3">
-                            <label class="form-label fw-bold"
-                                   th:text="#{register.member.haveMembership}">
+
+                            <label class="form-label fw-bold">
                                 Do you already have a membership?
                             </label>
 
                             <div class="form-check">
-                                <input class="form-check-input" type="radio"
-                                       name="hasMembership" id="hasYes" value="yes"
+
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="hasMembership"
+                                       id="hasYes"
+                                       value="yes"
                                        onclick="toggleForms()">
-                                <label class="form-check-label" for="hasYes"
-                                       th:text="#{yes}">
+
+                                <label class="form-check-label"
+                                       for="hasYes">
+
+                                    Yes
+
                                 </label>
+
                             </div>
 
                             <div class="form-check">
-                                <input class="form-check-input" type="radio"
-                                       name="hasMembership" id="hasNo" value="no"
+
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="hasMembership"
+                                       id="hasNo"
+                                       value="no"
                                        onclick="toggleForms()">
-                                <label class="form-check-label" for="hasNo"
-                                       th:text="#{no}">
+
+                                <label class="form-check-label"
+                                       for="hasNo">
+
+                                    No
+
                                 </label>
+
                             </div>
+
                         </div>
+
                     </form>
 
-                    <!-- Already have membership -->
-                    <form class="mt-4 d-none" id="existingMemberForm"
-                          method="post" th:action="@{/registerMember}">
-                        <h5 th:text="#{register.member.existing}">Existing Member</h5>
+                    <form class="mt-4 d-none"
+                          id="existingMemberForm">
+
+                        <h5>
+                            Existing Member
+                        </h5>
 
                         <div class="mb-3">
-                            <label class="form-label" th:text="#{email}">Email</label>
-                            <input type="email" class="form-control"
-                                   name="email" required>
+
+                            <label class="form-label">
+                                Email
+                            </label>
+
+                            <input type="email"
+                                   class="form-control"
+                                   id="existingEmail"
+                                   required>
+
                         </div>
 
-                        <input type="hidden" name="mode" value="existing"/>
+                        <button class="btn btn-primary w-100"
+                                type="submit">
 
-                        <button class="btn btn-primary w-100" type="submit"
-                                th:text="#{submit}">
                             Submit
+
                         </button>
+
                     </form>
 
-                    <!-- New membership -->
-                    <form class="mt-4 d-none" id="newMemberForm"
-                          method="post" th:action="@{/registerMember}">
-                        <h5 th:text="#{register.member.new}">New Membership</h5>
+                    <form class="mt-4 d-none"
+                          id="newMemberForm">
+
+                        <h5>
+                            New Membership
+                        </h5>
 
                         <div class="mb-3">
-                            <label class="form-label" th:text="#{firstName}">First Name</label>
-                            <input type="text" class="form-control"
-                                   name="firstName" required>
+
+                            <label class="form-label">
+                                First Name
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   id="firstName"
+                                   required>
+
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" th:text="#{lastName}">Last Name</label>
-                            <input type="text" class="form-control"
-                                   name="lastName" required>
+
+                            <label class="form-label">
+                                Last Name
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   id="lastName"
+                                   required>
+
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" th:text="#{email}">Email</label>
-                            <input type="email" class="form-control"
-                                   name="email" required>
+
+                            <label class="form-label">
+                                Email
+                            </label>
+
+                            <input type="email"
+                                   class="form-control"
+                                   id="email"
+                                   required>
+
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" th:text="#{phone}">Phone</label>
-                            <input type="text" class="form-control"
-                                   name="phone" required>
+
+                            <label class="form-label">
+                                Phone
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   id="phoneNumber"
+                                   required>
+
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold"
-                                   th:text="#{membership.type}">
+
+                            <label class="form-label fw-bold">
                                 Membership Type
                             </label>
 
-                            <div th:each="type : ${T(be.kdg.programming3.domain.enums.MembershipType).values()}">
-                                <div class="form-check">
-                                    <input class="form-check-input"
-                                           type="radio"
-                                           name="membershipType"
-                                           th:value="${type}"
-                                           required>
-                                    <label class="form-check-label"
-                                           th:text="#{'membership.' + ${type.name().toLowerCase()}}">
-                                    </label>
-                                </div>
-                            </div>
+                            <select id="membershipType"
+                                    class="form-select">
+
+                                <option value="STANDARD">
+                                    STANDARD
+                                </option>
+
+                                <option value="PREMIUM">
+                                    PREMIUM
+                                </option>
+
+                                <option value="STUDENT">
+                                    STUDENT
+                                </option>
+
+                            </select>
+
                         </div>
 
-                        <input type="hidden" name="mode" value="new"/>
+                        <button class="btn btn-success w-100"
+                                type="submit">
 
-                        <button class="btn btn-success w-100" type="submit"
-                                th:text="#{submit}">
                             Submit
+
                         </button>
+
                     </form>
 
                 </div>
+
             </div>
 
         </div>
+
     </div>
+
 </div>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
-<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 
 <script>
+
     function toggleForms() {
+
         const yes = document.getElementById('hasYes').checked;
+
         const exist = document.getElementById("existingMemberForm");
+
         const fresh = document.getElementById("newMemberForm");
 
         exist.classList.add("d-none");
         fresh.classList.add("d-none");
 
-        if (yes) exist.classList.remove("d-none");
-        else fresh.classList.remove("d-none");
+        if (yes) {
+            exist.classList.remove("d-none");
+        } else {
+            fresh.classList.remove("d-none");
+        }
     }
+
+    document.getElementById('existingMemberForm')
+        .addEventListener('submit', async (e) => {
+
+            e.preventDefault();
+
+            const email = document.getElementById('existingEmail').value;
+
+            const response = await fetch('/api/members/register/existing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+
+            if (response.ok) {
+                window.location.href = '/login';
+            } else {
+                alert('Member not found');
+            }
+        });
+
+    document.getElementById('newMemberForm')
+        .addEventListener('submit', async (e) => {
+
+            e.preventDefault();
+
+            const body = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                membershipType: document.getElementById('membershipType').value
+            };
+
+            const response = await fetch('/api/members/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                window.location.href = '/login';
+            } else {
+                alert('Failed to register member');
+            }
+        });
+
 </script>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 
 </body>
 </html>

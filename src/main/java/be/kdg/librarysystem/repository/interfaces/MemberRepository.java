@@ -4,13 +4,9 @@ import be.kdg.librarysystem.domain.Member;
 import be.kdg.librarysystem.domain.enums.MembershipType;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberRepository {
-    List<Member> findAllMembers();
-    Member getById(int id);
-    Member findByEmail(String email);
-    Member save(String firstName, String lastName, LocalDate membershipDate, MembershipType membershipType, String email, String phoneNumber, boolean activeMembership);
-    int update(Member member);
-    int delete(int id);
-    int updateImage(int memberId, String imagePath);
+    Optional<Member> findByEmailIgnoreCase(String email);
+    List<Member> findByMembershipType(MembershipType membershipType);
 }

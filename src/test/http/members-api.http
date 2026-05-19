@@ -1,0 +1,27 @@
+### Get all members - OK (200)
+GET http://localhost:8080/api/members
+Accept: application/json
+
+### Get member by ID - OK (200)
+GET http://localhost:8080/api/members/1
+Accept: application/json
+
+### Get member by ID - Not Found (404)
+GET http://localhost:8080/api/members/99999
+Accept: application/json
+
+### Filter members by email - OK (200)
+GET http://localhost:8080/api/members/filter?fields=email&query=test@example.com
+Accept: application/json
+
+### Filter members - Bad Request (400) - blank query
+GET http://localhost:8080/api/members/filter?fields=email&query=
+Accept: application/json
+
+### Get member checkouts by ID - OK (200)
+GET http://localhost:8080/api/members/1/checkouts
+Accept: application/json
+
+### Get member checkouts by ID - Not Found (404)
+GET http://localhost:8080/api/members/99999/checkouts
+Accept: application/json

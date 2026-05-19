@@ -5,11 +5,10 @@ import be.kdg.librarysystem.domain.User;
 import be.kdg.librarysystem.dto.MemberDTO;
 import be.kdg.librarysystem.dto.ProfileFormDTO;
 import be.kdg.librarysystem.mapper.MemberMapper;
-import be.kdg.librarysystem.service.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import be.kdg.librarysystem.security.CustomUserDetails;
+import be.kdg.librarysystem.service.MemberService;
+import be.kdg.librarysystem.service.UserService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,85 +17,155 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @RequestMapping("/profile")
 public class ProfileController {
-    private final MemberService memberService;
-    private static final Logger log = LoggerFactory.getLogger(ProfileController.class);
-    private final UserService userService;
-    private final AuthService authService;
 
-    public ProfileController(MemberService memberService, UserService userService, AuthService authService) {
+    private final MemberService memberService;
+    private final UserService userService;
+
+    public ProfileController(
+            MemberService memberService,
+            UserService userService
+    ) {
         this.memberService = memberService;
         this.userService = userService;
-        this.authService = authService;
     }
 
     @GetMapping
-    public String showProfile(Model model, HttpServletRequest request, HttpServletResponse response) {
-        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
+    public String showProfile(
+            Model model,
+            @AuthenticationPrincipal
+            CustomUserDetails userDetails
+    ) {
 
-        Member member = memberService.findById(authService.getUIDFromCookies(request));
+        User user = userDetails.getDomainUser();
+
+        Member member = user.getMember();
 
         ProfileFormDTO form = ProfileFormDTO.toProfileForm(member, user);
 
         model.addAttribute("profile", form);
-        model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", member.getProfileImageUrl());
 
-        model.addAttribute("myCheckouts", memberService.findCheckoutsByMemberId(member.getId()));
+        model.addAttribute(
+                "myCheckouts",
+                memberService.findCheckoutDtosByMemberId(
+                        member.getId()
+                )
+        );
 
         return "profile";
     }
 
     @GetMapping("/{id}")
-    public String showPublicProfile(@PathVariable int id ,Model model){
+    public String showPublicProfile(
+            @PathVariable int id,
+            Model model
+    ) {
+
         Member member = memberService.findById(id);
-        User user = userService.getUserByMemberId(member.getId());
-        ProfileFormDTO form = ProfileFormDTO.toProfileForm(member, user);
+
+        if (member == null) {
+            return "redirect:/members";
+        }
+
+        User user =
+                userService.findByMemberId(member.getId());
+
+        ProfileFormDTO form =
+                ProfileFormDTO.toProfileForm(member, user);
 
         model.addAttribute("profile", form);
-        model.addAttribute("membershipDate", member.getMembershipDate());
-        model.addAttribute("membershipType", member.getMembershipType());
-        model.addAttribute("currentUser", user);
-        model.addAttribute("userPhotoUrl", member.getProfileImageUrl());
-        model.addAttribute("myCheckouts", memberService.findCheckoutsByMemberId(member.getId()));
+
+        model.addAttribute(
+                "membershipDate",
+                member.getMembershipDate()
+        );
+
+        model.addAttribute(
+                "membershipType",
+                member.getMembershipType()
+        );
+
+        model.addAttribute(
+                "myCheckouts",
+                memberService.findCheckoutDtosByMemberId(
+                        member.getId()
+                )
+        );
 
         return "publicProfile";
     }
 
     @PostMapping("/update")
-    public String updateUserData(@ModelAttribute("profile") ProfileFormDTO dto, Model model, HttpServletRequest request, HttpServletResponse response){
-        User user = userService.getUserByToken(authService.getTokensFromCookies(request, response).getValue());
-        Member member = memberService.findById(user.getMember().getId());
+    public String updateUserData(
+            @ModelAttribute("profile")
+            ProfileFormDTO dto,
 
-        MemberDTO memberDTO = MemberMapper.toDTO(member);
+            @AuthenticationPrincipal
+            CustomUserDetails userDetails
+    ) {
+
+        User user = userDetails.getDomainUser();
+
+        Member member = user.getMember();
+
+        MemberDTO memberDTO =
+                MemberMapper.toDTO(member);
+
         memberDTO.setFirstName(dto.getFirstName());
         memberDTO.setLastName(dto.getLastName());
         memberDTO.setEmail(dto.getEmail());
         memberDTO.setPhoneNumber(dto.getPhoneNumber());
 
-        memberService.update(MemberMapper.toEntity(memberDTO));
-        userService.updateUsername(user.getId(), dto.getUsername());
+        memberService.update(
+                MemberMapper.toEntity(memberDTO)
+        );
+
+        userService.updateUsername(
+                user.getId(),
+                dto.getUsername()
+        );
 
         return "redirect:/profile";
     }
 
     @PostMapping("/change-password")
-    public String updatePassword(@RequestParam String oldPassword, @RequestParam String newPassword, HttpServletRequest request){
-        authService.updatePassword(oldPassword, newPassword, request);
+    public String updatePassword(
+            @RequestParam String oldPassword,
+            @RequestParam String newPassword,
+
+            @AuthenticationPrincipal
+            CustomUserDetails userDetails
+    ) {
+
+        userService.changePassword(
+                userDetails.getDomainUser(),
+                oldPassword,
+                newPassword
+        );
+
         return "redirect:/profile";
     }
 
     @PostMapping("/update-image")
-    public String updateProfileImage(@RequestParam("imageFile") MultipartFile imageFile, HttpServletRequest request) {
+    public String updateProfileImage(
+            @RequestParam("imageFile")
+            MultipartFile imageFile,
+
+            @AuthenticationPrincipal
+            CustomUserDetails userDetails
+    ) {
 
         if (imageFile.isEmpty()) {
             return "redirect:/profile";
         }
 
-        int userId = authService.getUIDFromCookies(request);
-        User user = userService.getUserById(userId);
+        User user = userDetails.getDomainUser();
 
-        memberService.updateImage(imageFile, userId, user.getMember().getId());
+        memberService.updateImage(
+                imageFile,
+                user.getId(),
+                user.getMember().getId()
+        );
+
         return "redirect:/profile";
     }
-
 }

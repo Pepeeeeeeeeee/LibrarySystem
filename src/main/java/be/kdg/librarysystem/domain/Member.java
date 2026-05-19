@@ -26,15 +26,20 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MembershipType membershipType;
 
+    @Column(unique = true)
     private String email;
     private String phoneNumber;
     private boolean activeMembership;
     private String profileImageUrl;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(
+            mappedBy = "member",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.LAZY
+    )
     private List<BookCheckout> checkouts = new ArrayList<>();
 
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private User user;
 
     /**
@@ -68,4 +73,3 @@ public class Member {
         checkout.setMember(this);
     }
 }
-

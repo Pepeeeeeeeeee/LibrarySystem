@@ -1,12 +1,12 @@
 package be.kdg.librarysystem.domain;
 
-import be.kdg.librarysystem.domain.enums.Flags;
+import be.kdg.librarysystem.domain.enums.Roles;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "application_users")
 @Data
 @NoArgsConstructor
 public class User {
@@ -19,13 +19,14 @@ public class User {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(unique = true)
     private String username;
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Flags flags;
+    @Column(nullable = false)
+    private Roles role;
 
-    private String token;
 
     /**
      * LEGACY constructor — DO NOT USE for new code.
@@ -36,13 +37,11 @@ public class User {
             int memberId,
             String username,
             String password,
-            Flags flags,
-            String token
+            Roles role
     ) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.flags = flags;
-        this.token = token;
+        this.role = role;
     }
 }

@@ -2,43 +2,59 @@ package be.kdg.librarysystem.service;
 
 import be.kdg.librarysystem.domain.BookCheckout;
 import be.kdg.librarysystem.domain.Librarian;
-import be.kdg.librarysystem.repository.interfaces.CheckoutRepository;
-import be.kdg.librarysystem.repository.interfaces.LibrarianRepository;
+import be.kdg.librarysystem.dto.LibrarianCheckoutDTO;
+import be.kdg.librarysystem.mapper.LibrarianMapper;
+import be.kdg.librarysystem.repository.BookCheckoutJpaRepository;
+import be.kdg.librarysystem.repository.LibrarianJpaRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class LibrarianService {
-    private final LibrarianRepository repo;
-    private final CheckoutRepository checkoutRepository;
 
-    public LibrarianService(LibrarianRepository repo, CheckoutRepository checkoutRepository) {
-        this.repo = repo;
+    private final LibrarianJpaRepository repository;
+    private final BookCheckoutJpaRepository checkoutRepository;
+
+    public LibrarianService(
+            LibrarianJpaRepository repository,
+            BookCheckoutJpaRepository checkoutRepository
+    ) {
+        this.repository = repository;
         this.checkoutRepository = checkoutRepository;
     }
 
     public List<Librarian> getAllLibrarians() {
-        return repo.findAllLibrarians();
+        return repository.findAll();
     }
 
     public Librarian getLibrarianById(int id) {
-        return repo.findById(id);
+        return repository.findById(id)
+                .orElse(null);
     }
 
-    public void addLibrarian(Librarian librarian) {
-        repo.save(librarian);
+    public Librarian addLibrarian(Librarian librarian) {
+        return repository.save(librarian);
     }
 
-    public int update(Librarian librarian) {
-        return repo.update(librarian);
+    public Librarian update(Librarian librarian) {
+        return repository.save(librarian);
     }
 
-    public int deleteLibrarian(int id) {
-        return repo.delete(id);
+    public void deleteLibrarian(int id) {
+        repository.deleteById(id);
     }
 
-    public List<Optional<BookCheckout>> getCheckOuts(int id){
-        return checkoutRepository.findByLibrarianId(id);
+    public List<BookCheckout> getCheckouts(int librarianId) {
+        return checkoutRepository.findByHandledByLibrarianId(librarianId);
+    }
+
+    public List<LibrarianCheckoutDTO> findCheckoutDtosByLibrarianId(int librarianId) {
+        return getCheckouts(librarianId).stream()
+                .map(LibrarianMapper::toLibrarianCheckoutDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -127,5 +127,7 @@ INSERT INTO book_checkouts (book_id, member_id, checkout_date, due_date, return_
     (4, 4, '2023-06-05', '2023-06-19', '2023-06-18', FALSE, 'RETURNED',     4),
     (5, 5, '2023-05-12', '2023-05-26', NULL, FALSE, 'CHECKED_OUT', 5);
 
-INSERT INTO users (member_id, username, password, flags, token) VALUES
-    (1, 'admin', 'jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=', 'ADMIN', '897f115a-e6a0-4583-ae68-8c7e6982bf11');
+INSERT INTO application_users (member_id, username, password, role) VALUES
+      (1, 'admin', '$2a$10$euAemxhVDH9.eVyHI4agCOKB4X2xrkJ0KOImx5FYIrSPZ2C7HbODm', 'ADMIN'),
+      (2, 'alice', '$2a$10$euAemxhVDH9.eVyHI4agCOKB4X2xrkJ0KOImx5FYIrSPZ2C7HbODm', 'USER'),
+      (3, 'bob', '$2a$10$euAemxhVDH9.eVyHI4agCOKB4X2xrkJ0KOImx5FYIrSPZ2C7HbODm', 'USER');

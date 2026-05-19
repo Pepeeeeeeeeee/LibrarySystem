@@ -27,6 +27,7 @@ public class Librarian {
 
     private boolean fullTime;
     private String employeePhotoUrl;
+    @Column(unique = true)
     private String email;
     private int phoneNumber;
 
@@ -58,4 +59,3 @@ public class Librarian {
         this.phoneNumber = phoneNumber;
     }
 }
-

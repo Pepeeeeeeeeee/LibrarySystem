@@ -195,15 +195,19 @@ public class FilteringService {
                     return false;
                 }
 
-                // Access field value (java reflection)
+                // Access field value
                 field.setAccessible(true);
-                Object fieldValue = field.get(2);
+                Object fieldValue = field.get(item);
                 if (fieldValue == null) return false;
 
                 // Strings have special operators
                 if (fieldValue instanceof String stringValue) {
                     String userValue = rawValue.toLowerCase();
                     String actualValue = stringValue.toLowerCase();
+
+                    System.out.println("DEBUG: String comparison - Entity: " + item + ", Field: " + fieldName + ", Operator: " + operator + ", RawValue: " + rawValue);
+                    System.out.println("DEBUG:   fieldValue: '" + stringValue + "', actualValue (lower): '" + actualValue + "'");
+                    System.out.println("DEBUG:   userValue (lower): '" + userValue + "'");
 
                     return switch (operator.toLowerCase()) {
                         case "=" -> actualValue.equals(userValue);
@@ -242,8 +246,16 @@ public class FilteringService {
 
                 return false;
 
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to access field " + fieldName + ": " + e.getMessage(), e);
+            } catch (NumberFormatException e) {
+                System.err.println("DEBUG: NumberFormatException caught in buildPredicate for field " + fieldName + ": " + e.getMessage());
+                throw e;
+            } catch (IllegalArgumentException e) {
+                System.err.println("DEBUG: IllegalArgumentException caught in buildPredicate for field " + fieldName + ": " + e.getMessage());
+                throw e;
             } catch (Exception e) {
-                System.err.println("Filtering failed: " + e.getMessage());
+                System.err.println("Filtering failed due to unexpected error: " + e.getMessage());
                 return false;
             }
         };

@@ -1,10 +1,13 @@
 package be.kdg.librarysystem.mapper;
 
+import be.kdg.librarysystem.domain.BookCheckout;
 import be.kdg.librarysystem.domain.Librarian;
+import be.kdg.librarysystem.dto.LibrarianCheckoutDTO;
 import be.kdg.librarysystem.dto.LibrarianDTO;
 import be.kdg.librarysystem.viewModel.LibrarianViewModel;
 
 public class LibrarianMapper {
+
     public static LibrarianDTO toDTO(Librarian librarian) {
         LibrarianDTO dto = new LibrarianDTO();
         dto.setId(librarian.getId());
@@ -63,5 +66,18 @@ public class LibrarianMapper {
                 librarian.getEmail(),
                 librarian.getPhoneNumber()
         );
+    }
+
+    public static LibrarianCheckoutDTO toLibrarianCheckoutDTO(BookCheckout checkout) {
+        LibrarianCheckoutDTO dto = new LibrarianCheckoutDTO();
+        dto.setCheckoutId(checkout.getId());
+        dto.setBookId(checkout.getBook().getId());
+        dto.setBookTitle(checkout.getBook().getTitle());
+        dto.setMemberId(checkout.getMember().getId());
+        dto.setMemberName(checkout.getMember().getFirstName() + " " + checkout.getMember().getLastName());
+        dto.setStatus(checkout.getStatus().name());
+        dto.setCheckoutDate(checkout.getCheckoutDate().toString());
+        dto.setDueDate(checkout.getDueDate().toString());
+        return dto;
     }
 }

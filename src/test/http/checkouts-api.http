@@ -1,0 +1,15 @@
+### Get all checkouts - OK (200)
+GET http://localhost:8080/api/checkouts
+Accept: application/json
+
+### Filter checkouts by ID - OK (200)
+GET http://localhost:8080/api/checkouts/filter?fields=id&query=1
+Accept: application/json
+
+### Filter checkouts - OK (200) - no results
+GET http://localhost:8080/api/checkouts/filter?fields=id&query=99999
+Accept: application/json
+
+### Filter checkouts - Bad Request (400) - blank query
+GET http://localhost:8080/api/checkouts/filter?fields=id&query=
+Accept: application/json

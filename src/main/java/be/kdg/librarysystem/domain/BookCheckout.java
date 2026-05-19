@@ -17,12 +17,6 @@ public class BookCheckout {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
-    private Book book;
-
-    @ManyToOne
-    private Member member;
-
     private LocalDate checkoutDate;
     private LocalDate dueDate;
     private LocalDate returnDate;
@@ -31,7 +25,13 @@ public class BookCheckout {
     @Enumerated(EnumType.STRING)
     private CheckoutStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Book book;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Librarian handledByLibrarian;
 
     /**
@@ -59,7 +59,6 @@ public class BookCheckout {
         this.status = status;
         this.handledByLibrarian = handledByLibrarian;
 
-        // Maintain bidirectional consistency (legacy behavior)
         book.addCheckout(this);
         member.getCheckouts().add(this);
     }
