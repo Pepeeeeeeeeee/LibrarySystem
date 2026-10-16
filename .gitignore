@@ -40,3 +40,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+### H2 local dev database (runtime state, regenerated from db/data.sql) ###
+db/h2repo.mv.db
+db/h2repo.trace.db
