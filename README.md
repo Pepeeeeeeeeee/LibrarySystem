@@ -59,10 +59,12 @@ The project supports multiple Spring profiles, each serving a different purpose:
 ```properties
 spring.datasource.url=jdbc:postgresql:pro3_db
 spring.datasource.username=postgres
-spring.datasource.password=Student_1234
+spring.datasource.password=${DB_PASSWORD:Student_1234}
 ```
 
-A `docker-compose.yml` file is provided to create the PostgreSQL database.
+A `docker-compose.yml` file is provided to create the PostgreSQL database. It reads the same
+`DB_PASSWORD` variable (falling back to `Student_1234` for local use if unset), so both sides
+stay in sync — set `DB_PASSWORD` in your shell or a `.env` file to override it.
 
 ---
 
