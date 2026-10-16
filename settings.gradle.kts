@@ -1,2 +1,2 @@
-rootProject.name = "MusicStreamingService"
+rootProject.name = "LibrarySystem"
 
